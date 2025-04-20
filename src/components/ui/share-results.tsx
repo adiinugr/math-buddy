@@ -291,59 +291,9 @@ export default function ShareResults({
     }
   }
 
-  // Tambahkan fungsi untuk mendapatkan teks berbagi yang informatif
-  const getShareText = () => {
-    // Dapatkan area yang perlu ditingkatkan (weaknessCategories)
-    const improvementAreas = weaknessCategories
-      .map((item) => item.category)
-      .slice(0, 3)
-
-    // Default jika tidak ada area yang perlu ditingkatkan
-    let areasText = ""
-
-    if (improvementAreas.length > 0) {
-      if (lang === "en") {
-        areasText =
-          improvementAreas.length === 1
-            ? `${improvementAreas[0]}`
-            : improvementAreas.length === 2
-            ? `${improvementAreas[0]} and ${improvementAreas[1]}`
-            : `${improvementAreas[0]}, ${improvementAreas[1]}, and more`
-      } else {
-        areasText =
-          improvementAreas.length === 1
-            ? `${improvementAreas[0]}`
-            : improvementAreas.length === 2
-            ? `${improvementAreas[0]} dan ${improvementAreas[1]}`
-            : `${improvementAreas[0]}, ${improvementAreas[1]}, dan lainnya`
-      }
-    } else {
-      areasText =
-        lang === "en" ? "various math topics" : "berbagai topik matematika"
-    }
-
-    // Buat teks berbagi dalam dua bahasa
-    if (lang === "en") {
-      return `Hi, I'm ${
-        studentName || "a student"
-      } and I've completed the assessment with a score of ${finalScore}/${finalTotalQuestions}. I need to improve my skills in ${areasText}.\n\nClick the link below for more information.\n${
-        window.location.href
-      }`
-    } else {
-      return `Hei, saya ${
-        studentName || "seorang siswa"
-      } sudah menyelesaikan asesmen dan mendapatkan skor ${finalScore}/${finalTotalQuestions}. Saya perlu mengasah kemampuan saya di ${areasText}.\n\nKlik link berikut untuk informasi lebih lanjut.\n${
-        window.location.href
-      }`
-    }
-  }
-
   const handleCopyLink = () => {
-    // Dapatkan teks berbagi yang informatif
-    const shareText = getShareText()
-
-    // Salin teks dan URL ke clipboard
-    navigator.clipboard.writeText(shareText)
+    const url = window.location.href
+    navigator.clipboard.writeText(url)
     setCopySuccess(true)
 
     // Reset setelah 2 detik
@@ -439,13 +389,12 @@ export default function ShareResults({
 
         // Eksekusi share
         if (navigator.share) {
-          // Dapatkan teks berbagi yang informatif
-          const shareText = getShareText()
-
           // Tambahkan title dan text untuk kasus fallback
           const shareData = {
             title: translations.shareAssessment,
-            text: shareText,
+            text: `${translations.shareAssessment} ${
+              studentName ? `- ${studentName}` : ""
+            }`,
             url: window.location.href,
             files: [file]
           }
