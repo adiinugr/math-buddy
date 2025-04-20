@@ -291,9 +291,59 @@ export default function ShareResults({
     }
   }
 
+  // Tambahkan fungsi untuk mendapatkan teks berbagi yang informatif
+  const getShareText = () => {
+    // Dapatkan area yang perlu ditingkatkan (weaknessCategories)
+    const improvementAreas = weaknessCategories
+      .map((item) => item.category)
+      .slice(0, 3)
+
+    // Default jika tidak ada area yang perlu ditingkatkan
+    let areasText = ""
+
+    if (improvementAreas.length > 0) {
+      if (lang === "en") {
+        areasText =
+          improvementAreas.length === 1
+            ? `${improvementAreas[0]}`
+            : improvementAreas.length === 2
+            ? `${improvementAreas[0]} and ${improvementAreas[1]}`
+            : `${improvementAreas[0]}, ${improvementAreas[1]}, and more`
+      } else {
+        areasText =
+          improvementAreas.length === 1
+            ? `${improvementAreas[0]}`
+            : improvementAreas.length === 2
+            ? `${improvementAreas[0]} dan ${improvementAreas[1]}`
+            : `${improvementAreas[0]}, ${improvementAreas[1]}, dan lainnya`
+      }
+    } else {
+      areasText =
+        lang === "en" ? "various math topics" : "berbagai topik matematika"
+    }
+
+    // Buat teks berbagi dalam dua bahasa
+    if (lang === "en") {
+      return `Hi, I'm ${
+        studentName || "a student"
+      } and I've completed the assessment with a score of ${finalScore}/${finalTotalQuestions}. I need to improve my skills in ${areasText}.\n\nClick the link below for more information.\n${
+        window.location.href
+      }`
+    } else {
+      return `Hei, saya ${
+        studentName || "seorang siswa"
+      } sudah menyelesaikan asesmen dan mendapatkan skor ${finalScore}/${finalTotalQuestions}. Saya perlu mengasah kemampuan saya di ${areasText}.\n\nKlik link berikut untuk informasi lebih lanjut.\n${
+        window.location.href
+      }`
+    }
+  }
+
   const handleCopyLink = () => {
-    const url = window.location.href
-    navigator.clipboard.writeText(url)
+    // Dapatkan teks berbagi yang informatif
+    const shareText = getShareText()
+
+    // Salin teks dan URL ke clipboard
+    navigator.clipboard.writeText(shareText)
     setCopySuccess(true)
 
     // Reset setelah 2 detik
@@ -322,9 +372,10 @@ export default function ShareResults({
     }
   }
 
-  // Ubah implementasi handleShare untuk mengatasi masalah gambar hitam
+  // Ubah implementasi handleShare untuk mengatasi glitch
   const handleShare = async () => {
     try {
+      // Aktifkan loading overlay segera untuk menutupi glitch
       setIsDialogLoading(true)
 
       // Pastikan cardRef valid
@@ -335,35 +386,34 @@ export default function ShareResults({
       }
 
       try {
-        // Buat container sementara untuk rendering
+        // Buat container sementara untuk rendering yang sepenuhnya tersembunyi
         const tempContainer = document.createElement("div")
-        tempContainer.style.position = "absolute"
-        tempContainer.style.left = "0"
-        tempContainer.style.top = "0"
+        tempContainer.style.position = "fixed"
+        tempContainer.style.left = "-9999px"
+        tempContainer.style.top = "-9999px"
         tempContainer.style.width = "1000px"
         tempContainer.style.height = "1250px"
-        tempContainer.style.zIndex = "-9999"
-        tempContainer.style.opacity = "1"
-        tempContainer.style.background = "white"
+        tempContainer.style.pointerEvents = "none"
         tempContainer.style.overflow = "hidden"
+        tempContainer.style.opacity = "0"
+        tempContainer.style.visibility = "hidden"
+        tempContainer.style.background = "white"
 
         // Clone node untuk dirender
         const cloneNode = cardRef.current.cloneNode(true) as HTMLElement
         cloneNode.style.transform = "none"
         cloneNode.style.position = "relative"
-        cloneNode.style.opacity = "1"
-        cloneNode.style.visibility = "visible"
         cloneNode.style.width = "100%"
         cloneNode.style.height = "100%"
 
-        // Tambahkan ke DOM untuk render
+        // Tambahkan ke DOM untuk render tetapi di luar viewport
         tempContainer.appendChild(cloneNode)
         document.body.appendChild(tempContainer)
 
         // Tunggu untuk memastikan render selesai
         await new Promise((resolve) => setTimeout(resolve, 300))
 
-        // Gunakan toPng untuk menghasilkan data URL, yang lebih reliabel
+        // Gunakan toPng untuk menghasilkan data URL
         const dataUrl = await toPng(cloneNode, {
           quality: 1,
           pixelRatio: 2,
@@ -374,7 +424,7 @@ export default function ShareResults({
           skipAutoScale: false
         })
 
-        // Hapus elemen sementara
+        // Hapus elemen sementara secepat mungkin
         document.body.removeChild(tempContainer)
 
         // Konversi data URL ke blob
@@ -389,12 +439,13 @@ export default function ShareResults({
 
         // Eksekusi share
         if (navigator.share) {
+          // Dapatkan teks berbagi yang informatif
+          const shareText = getShareText()
+
           // Tambahkan title dan text untuk kasus fallback
           const shareData = {
             title: translations.shareAssessment,
-            text: `${translations.shareAssessment} ${
-              studentName ? `- ${studentName}` : ""
-            }`,
+            text: shareText,
             url: window.location.href,
             files: [file]
           }
@@ -415,6 +466,7 @@ export default function ShareResults({
         }
       }
     } finally {
+      // Pastikan loading overlay dihilangkan di akhir
       setIsDialogLoading(false)
     }
   }
