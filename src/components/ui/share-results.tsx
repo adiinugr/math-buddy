@@ -183,15 +183,16 @@ export default function ShareResults({
       document.body.appendChild(offscreenContainer)
 
       // Langkah 4: Beri waktu untuk browser melakukan layout calculation
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 200))
 
       try {
         // Coba gunakan metode toBlob untuk kinerja yang lebih baik
         const blob = await toBlob(cloneElement, {
           quality: 0.95,
-          pixelRatio: 1.5, // Turunkan untuk performa
-          skipAutoScale: true,
-          cacheBust: true
+          pixelRatio: 2,
+          skipAutoScale: false,
+          cacheBust: true,
+          backgroundColor: "#ffffff"
         })
 
         if (blob) {
@@ -222,10 +223,11 @@ export default function ShareResults({
 
         // Fallback ke toPng dengan settings yang lebih ringan
         const dataUrl = await toPng(cloneElement, {
-          quality: 0.9,
-          pixelRatio: 1.5,
-          skipAutoScale: true,
+          quality: 0.95,
+          pixelRatio: 2,
+          skipAutoScale: false,
           cacheBust: true,
+          backgroundColor: "#ffffff",
           width: 1000,
           height: 1250
         })
@@ -322,142 +324,134 @@ export default function ShareResults({
     }
   }
 
-  // Ubah implementasi handleShare untuk mengatasi glitch
   const handleShare = async () => {
     try {
-      // Aktifkan loading overlay segera untuk menutupi glitch
+      // Aktifkan loading overlay
       setIsDialogLoading(true)
 
-      // Pastikan cardRef valid
-      if (!cardRef.current) {
+      // Jika tidak ada imageUrl, generate image first
+      if (!imageUrl) {
+        await generateImage()
+        // Berikan waktu untuk render
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      }
+
+      // Gunakan imageUrl yang sudah ada jika tersedia
+      if (!imageUrl) {
         setIsDialogLoading(false)
-        console.error("Card reference not available")
+        console.error("Failed to generate image for sharing")
         return
       }
 
       try {
-        // Buat container yang benar-benar tersembunyi dari viewport dan pengguna
-        const tempContainer = document.createElement("div")
-        tempContainer.style.position = "absolute"
-        tempContainer.style.left = "-9999px"
-        tempContainer.style.top = "-9999px"
-        tempContainer.style.width = "1000px"
-        tempContainer.style.height = "1250px"
-        tempContainer.style.zIndex = "-9999"
-        tempContainer.style.opacity = "0"
-        tempContainer.style.visibility = "hidden"
-        tempContainer.style.pointerEvents = "none"
-        tempContainer.style.overflow = "hidden"
-        tempContainer.style.background = "white"
+        // Konversi imageUrl ke blob
+        const response = await fetch(imageUrl)
+        const blob = await response.blob()
 
-        // Clone node untuk dirender
-        const cloneNode = cardRef.current.cloneNode(true) as HTMLElement
-        cloneNode.style.transform = "none"
-        cloneNode.style.position = "relative"
-        cloneNode.style.width = "100%"
-        cloneNode.style.height = "100%"
-        cloneNode.style.margin = "0"
-        cloneNode.style.padding = "0"
-        cloneNode.style.boxShadow = "none"
-        cloneNode.style.background = "white"
-        cloneNode.style.display = "block"
-
-        // Tambahkan ke body di luar viewport
-        tempContainer.appendChild(cloneNode)
-        document.body.appendChild(tempContainer)
-
-        // Tunggu untuk memastikan render selesai
-        await new Promise((resolve) => setTimeout(resolve, 500))
-
-        // Gunakan toBlob dengan pengaturan yang optimal
-        let imageBlob = null
-        try {
-          imageBlob = await toBlob(cloneNode, {
-            cacheBust: true,
-            pixelRatio: 2,
-            backgroundColor: "white",
-            quality: 1.0,
-            canvasWidth: 1000,
-            canvasHeight: 1250,
-            skipAutoScale: false
-          })
-        } catch (blobError) {
-          console.error("Error generating blob:", blobError)
-
-          // Fallback ke metode toPng yang dicoba sebelumnya
-          const dataUrl = await toPng(cloneNode, {
-            cacheBust: true,
-            pixelRatio: 2,
-            backgroundColor: "white",
-            quality: 1.0,
-            canvasWidth: 1000,
-            canvasHeight: 1250,
-            skipAutoScale: false
-          })
-
-          // Konversi dataUrl ke blob
-          const response = await fetch(dataUrl)
-          imageBlob = await response.blob()
-        }
-
-        // Hapus elemen sementara sebelum menggunakan hasil
-        document.body.removeChild(tempContainer)
-
-        if (!imageBlob) {
-          throw new Error("Failed to generate image")
-        }
-
-        // Buat file dari blob
-        const file = new File([imageBlob], "mathbuddy-result.png", {
+        // Buat file dari blob untuk berbagi
+        const file = new File([blob], "mathbuddy-result.png", {
           type: "image/png",
           lastModified: new Date().getTime()
         })
 
-        // Eksekusi share
-        if (navigator.share) {
+        // Periksa apakah browser mendukung berbagi file
+        if (
+          navigator.share &&
+          navigator.canShare &&
+          navigator.canShare({ files: [file] })
+        ) {
           try {
-            // Coba berbagi hanya teks dan url dulu
-            const textOnlyShareData = {
+            // Share dengan file
+            await navigator.share({
+              title: translations.shareAssessment,
+              text: `${translations.shareAssessment} ${
+                studentName ? `- ${studentName}` : ""
+              }`,
+              url: window.location.href,
+              files: [file]
+            } as ShareData)
+            console.log("Shared successfully with file")
+          } catch (error) {
+            console.error("Error sharing with file:", error)
+
+            // Fallback: berbagi tanpa file
+            await navigator.share({
               title: translations.shareAssessment,
               text: `${translations.shareAssessment} ${
                 studentName ? `- ${studentName}` : ""
               }`,
               url: window.location.href
-            }
-
-            // Coba cek apakah navigator.canShare tersedia dan bisa berbagi file
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              // Jika bisa berbagi file, tambahkan file ke data
-              const shareData = {
-                ...textOnlyShareData,
-                files: [file]
-              }
-
-              await navigator.share(shareData as ShareData)
-              console.log("Shared successfully with file")
-            } else {
-              // Jika tidak bisa berbagi file, berbagi teks saja
-              await navigator.share(textOnlyShareData)
-              console.log("Shared successfully without file (text only)")
-            }
-          } catch (error) {
-            console.error("Share error:", error)
-            handleDownload() // Fallback ke download
+            })
+            console.log("Shared successfully with text only (fallback)")
           }
+        } else if (navigator.share) {
+          // Share tanpa file jika canShare tidak didukung
+          await navigator.share({
+            title: translations.shareAssessment,
+            text: `${translations.shareAssessment} ${
+              studentName ? `- ${studentName}` : ""
+            }`,
+            url: window.location.href
+          })
+          console.log("Shared successfully with text only")
         } else {
-          console.log("Web Share API not supported")
+          // Fallback ke download jika Web Share API tidak didukung
           handleDownload()
         }
       } catch (error) {
-        console.error("Error sharing:", error)
-
-        // Jika error bukan AbortError (user cancel), fallback ke download
+        console.error("Error in sharing process:", error)
+        // Fallback ke download untuk error apapun kecuali user cancel
         if (error instanceof Error && error.name !== "AbortError") {
           handleDownload()
         }
       }
     } finally {
-      // Pastikan loading overlay dihilangkan di akhir
+      setIsDialogLoading(false)
+    }
+  }
+
+  // Tambahkan fungsi untuk menangani berbagi melalui data URL langsung
+  const handleShareDirectDataUrl = async () => {
+    try {
+      setIsDialogLoading(true)
+
+      if (!cardRef.current) {
+        setIsDialogLoading(false)
+        return
+      }
+
+      // Gunakan cara yang paling sederhana untuk membuat gambar
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: "#ffffff",
+        quality: 1.0
+      })
+
+      // Set URL baru untuk ditampilkan
+      setImageUrl(dataUrl)
+
+      // Download gambar secara otomatis
+      const link = document.createElement("a")
+      link.download = `mathbuddy-assessment-${new Date().getTime()}.png`
+      link.href = dataUrl
+      link.click()
+
+      // Coba berbagi data URL sebagai teks
+      if (navigator.share) {
+        await navigator.share({
+          title: translations.shareAssessment,
+          text: `${translations.shareAssessment} ${
+            studentName ? `- ${studentName}` : ""
+          }`,
+          url: window.location.href
+        })
+        console.log("Shared with direct URL")
+      }
+    } catch (error) {
+      console.error("Error in direct share:", error)
+      handleDownload()
+    } finally {
       setIsDialogLoading(false)
     }
   }
@@ -531,7 +525,7 @@ export default function ShareResults({
               </div>
 
               {imageUrl && (
-                <div className="flex justify-between w-full gap-3">
+                <div className="flex flex-col sm:flex-row justify-between w-full gap-3">
                   <Button
                     variant="outline"
                     className="flex items-center gap-2 flex-1"
@@ -553,6 +547,25 @@ export default function ShareResults({
                   </Button>
                 </div>
               )}
+
+              {/* Tambahkan tombol fallback jika platform adalah mobile */}
+              {imageUrl &&
+                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                  navigator.userAgent
+                ) && (
+                  <div className="mt-3">
+                    <Button
+                      variant="ghost"
+                      className="w-full text-sm text-muted-foreground"
+                      onClick={handleShareDirectDataUrl}
+                      disabled={isGenerating}
+                    >
+                      {lang === "en"
+                        ? "Alternative share method"
+                        : "Metode berbagi alternatif"}
+                    </Button>
+                  </div>
+                )}
             </TabsContent>
             <TabsContent
               value="link"

@@ -87,7 +87,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
           boxSizing: "border-box",
           margin: "0",
           padding: "48px",
-          background: "linear-gradient(to bottom, #ffffff, #f7f9ff)",
+          backgroundColor: "#ffffff",
           contain: "layout paint style"
         }}
       >
@@ -102,7 +102,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             </h2>
           </div>
           <div className="flex-none">
-            <div className="text-primary font-bold text-4xl font-heading">
+            <div className="text-primary font-bold text-4xl">
               {translations.mathBuddy}
               <span className="text-accent text-3xl align-text-top">β</span>
             </div>
@@ -384,8 +384,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             paddingTop: "32px",
             borderTopWidth: "2px",
             borderTopColor: "#c7d2fe",
-            background:
-              "linear-gradient(to bottom, rgba(224, 231, 255, 0), rgba(224, 231, 255, 0.2))",
+            backgroundColor: "#f7f9ff",
             paddingBottom: "16px",
             borderRadius: "0 0 12px 12px"
           }}
@@ -402,9 +401,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             <span
               style={{
                 fontWeight: "700",
-                background: "linear-gradient(45deg, #4338ca, #6366f1)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
+                color: "#4338ca"
               }}
             >
               {translations.mathBuddy}
