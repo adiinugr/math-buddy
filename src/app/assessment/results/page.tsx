@@ -74,6 +74,7 @@ export default function ResultsPage() {
     // Check if user completed assessment
     const storedResults = localStorage.getItem("assessmentResults")
     const studentName = localStorage.getItem("studentName")
+    const storedQuestions = localStorage.getItem("assessmentQuestions")
 
     if (!storedResults || !studentName) {
       router.push("/assessment/start")
@@ -85,311 +86,329 @@ export default function ResultsPage() {
       setResults(parsedResults)
       setName(studentName)
 
-      // Karena pertanyaan tidak disimpan di localStorage, kita gunakan data sampel
-      // Ini adalah solusi sementara, idealnya kita menyimpan pertanyaan yang digunakan
-      // dalam tes bersama dengan jawaban
-      const sampleQuestions =
-        lang === "en"
-          ? [
-              {
-                id: 1,
-                text: "Solve for x: 2x + 5 = 13",
-                options: ["x = 3", "x = 4", "x = 8", "x = 9"],
-                correctAnswer: "x = 4",
-                category: "algebra" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "easy" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 2,
-                text: "What is the area of a circle with radius 4 units?",
-                options: [
-                  "8π square units",
-                  "16π square units",
-                  "4π square units",
-                  "12π square units"
-                ],
-                correctAnswer: "16π square units",
-                category: "geometry" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "easy" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 3,
-                text: "Simplify: (3 × 4) + (6 ÷ 2)",
-                options: ["15", "24", "18", "21"],
-                correctAnswer: "15",
-                category: "arithmetic" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "easy" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 4,
-                text: "Find the derivative of f(x) = x² + 3x + 2",
-                options: [
-                  "f'(x) = 2x + 3",
-                  "f'(x) = x² + 3",
-                  "f'(x) = 2x",
-                  "f'(x) = 3"
-                ],
-                correctAnswer: "f'(x) = 2x + 3",
-                category: "calculus" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "medium" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 5,
-                text: "Solve the system of equations: 2x + y = 5 and x - y = 1",
-                options: [
-                  "x = 2, y = 1",
-                  "x = 3, y = -1",
-                  "x = 1, y = 3",
-                  "x = 0, y = 5"
-                ],
-                correctAnswer: "x = 2, y = 1",
-                category: "algebra" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "medium" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 6,
-                text: "What is the perimeter of a rectangle with length 8 units and width 5 units?",
-                options: ["13 units", "26 units", "40 units", "20 units"],
-                correctAnswer: "26 units",
-                category: "geometry" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "easy" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 7,
-                text: "Evaluate: 25 ÷ (3 + 2) × 4",
-                options: ["5", "20", "100", "1"],
-                correctAnswer: "20",
-                category: "arithmetic" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "medium" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 8,
-                text: "Find the integral of f(x) = 2x + 3",
-                options: [
-                  "F(x) = x² + 3x + C",
-                  "F(x) = 2x² + 3x + C",
-                  "F(x) = x² + 3x",
-                  "F(x) = x² + 3"
-                ],
-                correctAnswer: "F(x) = x² + 3x + C",
-                category: "calculus" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "hard" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 9,
-                text: "If a triangle has sides of 3, 4, and 5 units, what is its area?",
-                options: [
-                  "6 square units",
-                  "10 square units",
-                  "7.5 square units",
-                  "6.5 square units"
-                ],
-                correctAnswer: "6 square units",
-                category: "geometry" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "medium" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 10,
-                text: "Solve for x: log₃(x) = 2",
-                options: ["x = 6", "x = 9", "x = 8", "x = 5"],
-                correctAnswer: "x = 9",
-                category: "algebra" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "hard" as "easy" | "medium" | "hard"
-              }
-            ]
-          : [
-              {
-                id: 1,
-                text: "Selesaikan x: 2x + 5 = 13",
-                options: ["x = 3", "x = 4", "x = 8", "x = 9"],
-                correctAnswer: "x = 4",
-                category: "algebra" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "easy" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 2,
-                text: "Berapa luas lingkaran dengan jari-jari 4 satuan?",
-                options: [
-                  "8π satuan persegi",
-                  "16π satuan persegi",
-                  "4π satuan persegi",
-                  "12π satuan persegi"
-                ],
-                correctAnswer: "16π satuan persegi",
-                category: "geometry" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "easy" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 3,
-                text: "Sederhanakan: (3 × 4) + (6 ÷ 2)",
-                options: ["15", "24", "18", "21"],
-                correctAnswer: "15",
-                category: "arithmetic" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "easy" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 4,
-                text: "Tentukan turunan dari f(x) = x² + 3x + 2",
-                options: [
-                  "f'(x) = 2x + 3",
-                  "f'(x) = x² + 3",
-                  "f'(x) = 2x",
-                  "f'(x) = 3"
-                ],
-                correctAnswer: "f'(x) = 2x + 3",
-                category: "calculus" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "medium" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 5,
-                text: "Selesaikan sistem persamaan: 2x + y = 5 dan x - y = 1",
-                options: [
-                  "x = 2, y = 1",
-                  "x = 3, y = -1",
-                  "x = 1, y = 3",
-                  "x = 0, y = 5"
-                ],
-                correctAnswer: "x = 2, y = 1",
-                category: "algebra" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "medium" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 6,
-                text: "Berapa keliling persegi panjang dengan panjang 8 satuan dan lebar 5 satuan?",
-                options: ["13 satuan", "26 satuan", "40 satuan", "20 satuan"],
-                correctAnswer: "26 satuan",
-                category: "geometry" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "easy" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 7,
-                text: "Hitung: 25 ÷ (3 + 2) × 4",
-                options: ["5", "20", "100", "1"],
-                correctAnswer: "20",
-                category: "arithmetic" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "medium" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 8,
-                text: "Tentukan integral dari f(x) = 2x + 3",
-                options: [
-                  "F(x) = x² + 3x + C",
-                  "F(x) = 2x² + 3x + C",
-                  "F(x) = x² + 3x",
-                  "F(x) = x² + 3"
-                ],
-                correctAnswer: "F(x) = x² + 3x + C",
-                category: "calculus" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "hard" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 9,
-                text: "Jika sebuah segitiga memiliki sisi-sisi 3, 4, dan 5 satuan, berapa luasnya?",
-                options: [
-                  "6 satuan persegi",
-                  "10 satuan persegi",
-                  "7,5 satuan persegi",
-                  "6,5 satuan persegi"
-                ],
-                correctAnswer: "6 satuan persegi",
-                category: "geometry" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "medium" as "easy" | "medium" | "hard"
-              },
-              {
-                id: 10,
-                text: "Selesaikan untuk x: log₃(x) = 2",
-                options: ["x = 6", "x = 9", "x = 8", "x = 5"],
-                correctAnswer: "x = 9",
-                category: "algebra" as
-                  | "algebra"
-                  | "geometry"
-                  | "arithmetic"
-                  | "calculus",
-                difficulty: "hard" as "easy" | "medium" | "hard"
-              }
-            ]
+      // Mencoba memuat pertanyaan dari localStorage jika tersedia
+      let questionData = []
+      if (storedQuestions) {
+        try {
+          questionData = JSON.parse(storedQuestions)
+          console.log("Loaded stored questions:", questionData)
+        } catch (err) {
+          console.error("Error parsing stored questions:", err)
+        }
+      }
 
-      setQuestions(sampleQuestions)
+      // Jika tidak ada pertanyaan tersimpan, gunakan data sampel
+      if (!questionData || questionData.length === 0) {
+        const sampleQuestions =
+          lang === "en"
+            ? [
+                {
+                  id: 1,
+                  text: "Solve for x: 2x + 5 = 13",
+                  options: ["x = 3", "x = 4", "x = 8", "x = 9"],
+                  correctAnswer: "x = 4",
+                  category: "algebra" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "easy" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 2,
+                  text: "What is the area of a circle with radius 4 units?",
+                  options: [
+                    "8π square units",
+                    "16π square units",
+                    "4π square units",
+                    "12π square units"
+                  ],
+                  correctAnswer: "16π square units",
+                  category: "geometry" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "easy" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 3,
+                  text: "Simplify: (3 × 4) + (6 ÷ 2)",
+                  options: ["15", "24", "18", "21"],
+                  correctAnswer: "15",
+                  category: "arithmetic" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "easy" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 4,
+                  text: "Find the derivative of f(x) = x² + 3x + 2",
+                  options: [
+                    "f'(x) = 2x + 3",
+                    "f'(x) = x² + 3",
+                    "f'(x) = 2x",
+                    "f'(x) = 3"
+                  ],
+                  correctAnswer: "f'(x) = 2x + 3",
+                  category: "calculus" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "medium" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 5,
+                  text: "Solve the system of equations: 2x + y = 5 and x - y = 1",
+                  options: [
+                    "x = 2, y = 1",
+                    "x = 3, y = -1",
+                    "x = 1, y = 3",
+                    "x = 0, y = 5"
+                  ],
+                  correctAnswer: "x = 2, y = 1",
+                  category: "algebra" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "medium" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 6,
+                  text: "What is the perimeter of a rectangle with length 8 units and width 5 units?",
+                  options: ["13 units", "26 units", "40 units", "20 units"],
+                  correctAnswer: "26 units",
+                  category: "geometry" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "easy" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 7,
+                  text: "Evaluate: 25 ÷ (3 + 2) × 4",
+                  options: ["5", "20", "100", "1"],
+                  correctAnswer: "20",
+                  category: "arithmetic" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "medium" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 8,
+                  text: "Find the integral of f(x) = 2x + 3",
+                  options: [
+                    "F(x) = x² + 3x + C",
+                    "F(x) = 2x² + 3x + C",
+                    "F(x) = x² + 3x",
+                    "F(x) = x² + 3"
+                  ],
+                  correctAnswer: "F(x) = x² + 3x + C",
+                  category: "calculus" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "hard" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 9,
+                  text: "If a triangle has sides of 3, 4, and 5 units, what is its area?",
+                  options: [
+                    "6 square units",
+                    "10 square units",
+                    "7.5 square units",
+                    "6.5 square units"
+                  ],
+                  correctAnswer: "6 square units",
+                  category: "geometry" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "medium" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 10,
+                  text: "Solve for x: log₃(x) = 2",
+                  options: ["x = 6", "x = 9", "x = 8", "x = 5"],
+                  correctAnswer: "x = 9",
+                  category: "algebra" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "hard" as "easy" | "medium" | "hard"
+                }
+              ]
+            : [
+                {
+                  id: 1,
+                  text: "Selesaikan x: 2x + 5 = 13",
+                  options: ["x = 3", "x = 4", "x = 8", "x = 9"],
+                  correctAnswer: "x = 4",
+                  category: "algebra" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "easy" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 2,
+                  text: "Berapa luas lingkaran dengan jari-jari 4 satuan?",
+                  options: [
+                    "8π satuan persegi",
+                    "16π satuan persegi",
+                    "4π satuan persegi",
+                    "12π satuan persegi"
+                  ],
+                  correctAnswer: "16π satuan persegi",
+                  category: "geometry" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "easy" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 3,
+                  text: "Sederhanakan: (3 × 4) + (6 ÷ 2)",
+                  options: ["15", "24", "18", "21"],
+                  correctAnswer: "15",
+                  category: "arithmetic" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "easy" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 4,
+                  text: "Tentukan turunan dari f(x) = x² + 3x + 2",
+                  options: [
+                    "f'(x) = 2x + 3",
+                    "f'(x) = x² + 3",
+                    "f'(x) = 2x",
+                    "f'(x) = 3"
+                  ],
+                  correctAnswer: "f'(x) = 2x + 3",
+                  category: "calculus" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "medium" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 5,
+                  text: "Selesaikan sistem persamaan: 2x + y = 5 dan x - y = 1",
+                  options: [
+                    "x = 2, y = 1",
+                    "x = 3, y = -1",
+                    "x = 1, y = 3",
+                    "x = 0, y = 5"
+                  ],
+                  correctAnswer: "x = 2, y = 1",
+                  category: "algebra" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "medium" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 6,
+                  text: "Berapa keliling persegi panjang dengan panjang 8 satuan dan lebar 5 satuan?",
+                  options: ["13 satuan", "26 satuan", "40 satuan", "20 satuan"],
+                  correctAnswer: "26 satuan",
+                  category: "geometry" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "easy" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 7,
+                  text: "Hitung: 25 ÷ (3 + 2) × 4",
+                  options: ["5", "20", "100", "1"],
+                  correctAnswer: "20",
+                  category: "arithmetic" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "medium" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 8,
+                  text: "Tentukan integral dari f(x) = 2x + 3",
+                  options: [
+                    "F(x) = x² + 3x + C",
+                    "F(x) = 2x² + 3x + C",
+                    "F(x) = x² + 3x",
+                    "F(x) = x² + 3"
+                  ],
+                  correctAnswer: "F(x) = x² + 3x + C",
+                  category: "calculus" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "hard" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 9,
+                  text: "Jika sebuah segitiga memiliki sisi-sisi 3, 4, dan 5 satuan, berapa luasnya?",
+                  options: [
+                    "6 satuan persegi",
+                    "10 satuan persegi",
+                    "7,5 satuan persegi",
+                    "6,5 satuan persegi"
+                  ],
+                  correctAnswer: "6 satuan persegi",
+                  category: "geometry" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "medium" as "easy" | "medium" | "hard"
+                },
+                {
+                  id: 10,
+                  text: "Selesaikan untuk x: log₃(x) = 2",
+                  options: ["x = 6", "x = 9", "x = 8", "x = 5"],
+                  correctAnswer: "x = 9",
+                  category: "algebra" as
+                    | "algebra"
+                    | "geometry"
+                    | "arithmetic"
+                    | "calculus",
+                  difficulty: "hard" as "easy" | "medium" | "hard"
+                }
+              ]
+
+        questionData = sampleQuestions
+        // Simpan pertanyaan sampel ke localStorage untuk penggunaan berikutnya
+        localStorage.setItem(
+          "assessmentQuestions",
+          JSON.stringify(sampleQuestions)
+        )
+      }
+
+      setQuestions(questionData)
 
       // Debug - tampilkan di konsol untuk memastikan data tersedia
       console.log("Loaded results:", parsedResults)
-      console.log("Loaded questions:", sampleQuestions)
+      console.log("Loaded questions:", questionData)
     } catch (err) {
       console.error("Error parsing results", err)
       router.push("/assessment/start")
@@ -1290,7 +1309,7 @@ export default function ResultsPage() {
 
                   <TabsContent value="questions">
                     <div className="space-y-4">
-                      {questions.length > 0 ? (
+                      {questions && questions.length > 0 && results?.answers ? (
                         questions.map((question, index) => {
                           // Pastikan results dan answers ada sebelum mencoba akses
                           const idx = index.toString()
@@ -1390,11 +1409,24 @@ export default function ResultsPage() {
                           )
                         })
                       ) : (
-                        <p className="text-center text-gray-600 dark:text-gray-400 italic">
-                          {lang === "en"
-                            ? "No question data available."
-                            : "Tidak ada data pertanyaan tersedia."}
-                        </p>
+                        <div className="text-center py-10">
+                          <div className="bg-primary/5 p-8 rounded-lg mb-4">
+                            <p className="text-center text-gray-600 dark:text-gray-400 mb-4">
+                              {lang === "en"
+                                ? "Question data couldn't be loaded. This may happen if you're viewing a previous assessment or if the question data has been reset."
+                                : "Data pertanyaan tidak dapat dimuat. Ini mungkin terjadi jika Anda melihat penilaian sebelumnya atau jika data pertanyaan telah diatur ulang."}
+                            </p>
+                            <Button
+                              variant="outline"
+                              onClick={() => router.push("/assessment/start")}
+                              className="mx-auto"
+                            >
+                              {lang === "en"
+                                ? "Retake Assessment"
+                                : "Ambil Ulang Penilaian"}
+                            </Button>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </TabsContent>

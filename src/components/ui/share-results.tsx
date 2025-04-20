@@ -322,9 +322,10 @@ export default function ShareResults({
     }
   }
 
-  // Ubah implementasi handleShare untuk mengatasi masalah gambar hitam
+  // Ubah implementasi handleShare untuk mengatasi glitch
   const handleShare = async () => {
     try {
+      // Aktifkan loading overlay segera untuk menutupi glitch
       setIsDialogLoading(true)
 
       // Pastikan cardRef valid
@@ -335,73 +336,114 @@ export default function ShareResults({
       }
 
       try {
-        // Buat container sementara untuk rendering
+        // Buat container yang benar-benar tersembunyi dari viewport dan pengguna
         const tempContainer = document.createElement("div")
         tempContainer.style.position = "absolute"
-        tempContainer.style.left = "0"
-        tempContainer.style.top = "0"
+        tempContainer.style.left = "-9999px"
+        tempContainer.style.top = "-9999px"
         tempContainer.style.width = "1000px"
         tempContainer.style.height = "1250px"
         tempContainer.style.zIndex = "-9999"
-        tempContainer.style.opacity = "1"
-        tempContainer.style.background = "white"
+        tempContainer.style.opacity = "0"
+        tempContainer.style.visibility = "hidden"
+        tempContainer.style.pointerEvents = "none"
         tempContainer.style.overflow = "hidden"
+        tempContainer.style.background = "white"
 
         // Clone node untuk dirender
         const cloneNode = cardRef.current.cloneNode(true) as HTMLElement
         cloneNode.style.transform = "none"
         cloneNode.style.position = "relative"
-        cloneNode.style.opacity = "1"
-        cloneNode.style.visibility = "visible"
         cloneNode.style.width = "100%"
         cloneNode.style.height = "100%"
+        cloneNode.style.margin = "0"
+        cloneNode.style.padding = "0"
+        cloneNode.style.boxShadow = "none"
+        cloneNode.style.background = "white"
+        cloneNode.style.display = "block"
 
-        // Tambahkan ke DOM untuk render
+        // Tambahkan ke body di luar viewport
         tempContainer.appendChild(cloneNode)
         document.body.appendChild(tempContainer)
 
         // Tunggu untuk memastikan render selesai
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        await new Promise((resolve) => setTimeout(resolve, 500))
 
-        // Gunakan toPng untuk menghasilkan data URL, yang lebih reliabel
-        const dataUrl = await toPng(cloneNode, {
-          quality: 1,
-          pixelRatio: 2,
-          cacheBust: true,
-          backgroundColor: "white",
-          canvasWidth: 1000,
-          canvasHeight: 1250,
-          skipAutoScale: false
-        })
+        // Gunakan toBlob dengan pengaturan yang optimal
+        let imageBlob = null
+        try {
+          imageBlob = await toBlob(cloneNode, {
+            cacheBust: true,
+            pixelRatio: 2,
+            backgroundColor: "white",
+            quality: 1.0,
+            canvasWidth: 1000,
+            canvasHeight: 1250,
+            skipAutoScale: false
+          })
+        } catch (blobError) {
+          console.error("Error generating blob:", blobError)
 
-        // Hapus elemen sementara
+          // Fallback ke metode toPng yang dicoba sebelumnya
+          const dataUrl = await toPng(cloneNode, {
+            cacheBust: true,
+            pixelRatio: 2,
+            backgroundColor: "white",
+            quality: 1.0,
+            canvasWidth: 1000,
+            canvasHeight: 1250,
+            skipAutoScale: false
+          })
+
+          // Konversi dataUrl ke blob
+          const response = await fetch(dataUrl)
+          imageBlob = await response.blob()
+        }
+
+        // Hapus elemen sementara sebelum menggunakan hasil
         document.body.removeChild(tempContainer)
 
-        // Konversi data URL ke blob
-        const response = await fetch(dataUrl)
-        const blob = await response.blob()
+        if (!imageBlob) {
+          throw new Error("Failed to generate image")
+        }
 
         // Buat file dari blob
-        const file = new File([blob], "mathbuddy-result.png", {
+        const file = new File([imageBlob], "mathbuddy-result.png", {
           type: "image/png",
           lastModified: new Date().getTime()
         })
 
         // Eksekusi share
         if (navigator.share) {
-          // Tambahkan title dan text untuk kasus fallback
-          const shareData = {
-            title: translations.shareAssessment,
-            text: `${translations.shareAssessment} ${
-              studentName ? `- ${studentName}` : ""
-            }`,
-            url: window.location.href,
-            files: [file]
-          }
+          try {
+            // Coba berbagi hanya teks dan url dulu
+            const textOnlyShareData = {
+              title: translations.shareAssessment,
+              text: `${translations.shareAssessment} ${
+                studentName ? `- ${studentName}` : ""
+              }`,
+              url: window.location.href
+            }
 
-          // Memberikan tipe yang lebih spesifik
-          await navigator.share(shareData as ShareData)
-          console.log("Shared successfully")
+            // Coba cek apakah navigator.canShare tersedia dan bisa berbagi file
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              // Jika bisa berbagi file, tambahkan file ke data
+              const shareData = {
+                ...textOnlyShareData,
+                files: [file]
+              }
+
+              await navigator.share(shareData as ShareData)
+              console.log("Shared successfully with file")
+            } else {
+              // Jika tidak bisa berbagi file, berbagi teks saja
+              await navigator.share(textOnlyShareData)
+              console.log("Shared successfully without file (text only)")
+            }
+          } catch (error) {
+            console.error("Share error:", error)
+            handleDownload() // Fallback ke download
+          }
         } else {
           console.log("Web Share API not supported")
           handleDownload()
@@ -415,6 +457,7 @@ export default function ShareResults({
         }
       }
     } finally {
+      // Pastikan loading overlay dihilangkan di akhir
       setIsDialogLoading(false)
     }
   }
@@ -571,7 +614,10 @@ export default function ShareResults({
           transform: "scale(1)",
           transformOrigin: "0 0",
           width: "1000px",
-          height: "1250px"
+          height: "1250px",
+          zIndex: "-9999",
+          overflow: "hidden",
+          backgroundColor: "#ffffff"
         }}
       >
         <ShareCard
