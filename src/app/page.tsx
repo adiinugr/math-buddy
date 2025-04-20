@@ -1,103 +1,174 @@
-import Image from "next/image";
+"use client"
+
+import { useTranslation } from "@/hooks/useTranslation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { t } = useTranslation()
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="p-6 pb-20 sm:p-20">
+      <div className="flex flex-col gap-[32px] items-center w-full max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full">
+          <div className="flex flex-col justify-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4 font-heading">
+              {t("home.hero.title")} <span className="text-accent">β</span>
+            </h2>
+            <p className="text-foreground mb-6 text-lg">
+              {t("home.hero.description")}
+            </p>
+            <Button asChild size="lg" className="w-fit">
+              <Link href="/assessment/start">{t("home.hero.cta")}</Link>
+            </Button>
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="relative w-full h-80 md:h-96 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center">
+              <span className="text-[200px] font-bold text-primary font-serif drop-shadow-lg hover:text-accent transition-colors duration-300">
+                β
+              </span>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="w-full mt-16">
+          <h3 className="text-2xl font-semibold text-center mb-10 font-heading">
+            {t("home.howItWorks.title")}
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full">
+            {[0, 1, 2, 3].map((index) => (
+              <div
+                key={index}
+                className="bg-card p-6 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow"
+              >
+                <div
+                  className={`w-12 h-12 ${
+                    index === 3 ? "bg-accent/20" : "bg-primary/20"
+                  } rounded-full flex items-center justify-center mb-4`}
+                >
+                  <span
+                    className={`font-bold text-xl ${
+                      index === 3 ? "text-accent" : "text-primary"
+                    }`}
+                  >
+                    {index + 1}
+                  </span>
+                </div>
+                <h3 className="text-lg font-semibold text-card-foreground mb-2 font-heading">
+                  {t(`home.howItWorks.steps.${index}.title`)}
+                </h3>
+                <p className="text-muted-foreground">
+                  {t(`home.howItWorks.steps.${index}.description`)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-full mt-16 bg-card p-8 rounded-xl shadow-md border border-border">
+          <h3 className="text-2xl font-semibold mb-6 font-heading">
+            {t("home.whyChoose.title")}
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[0, 1, 2, 3].map((index) => (
+              <div key={index} className="flex gap-4">
+                <div
+                  className={`w-10 h-10 ${
+                    index === 3 ? "bg-accent/20" : "bg-primary/20"
+                  } rounded-full flex items-center justify-center flex-shrink-0`}
+                >
+                  <svg
+                    className={`w-5 h-5 ${
+                      index === 3 ? "text-accent" : "text-primary"
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {index === 0 && (
+                      <path
+                        d="M3 6h18M3 12h18M3 18h18"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    )}
+                    {index === 1 && (
+                      <>
+                        <path
+                          d="M4 4l16 16M4 20L20 4"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </>
+                    )}
+                    {index === 2 && (
+                      <>
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                        <text
+                          x="7.5"
+                          y="15"
+                          fontSize="9"
+                          fontWeight="bold"
+                          fill="currentColor"
+                          fontFamily="serif"
+                        >
+                          β
+                        </text>
+                      </>
+                    )}
+                    {index === 3 && (
+                      <>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="9"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                        <path
+                          d="M12 7v10M7 12h10"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </>
+                    )}
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1 font-heading">
+                    {t(`home.whyChoose.features.${index}.title`)}
+                  </h4>
+                  <p className="text-muted-foreground">
+                    {t(`home.whyChoose.features.${index}.description`)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-full mt-10 flex flex-col items-center">
+          <h3 className="text-2xl font-semibold mb-4 font-heading">
+            {t("home.finalCta.title")}
+          </h3>
+          <Button asChild size="lg" className="mt-4 text-lg">
+            <Link href="/assessment/start">{t("home.finalCta.button")}</Link>
+          </Button>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
