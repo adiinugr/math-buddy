@@ -354,6 +354,55 @@ export default function ShareResults({
           lastModified: new Date().getTime()
         })
 
+        // Buat teks informasi yang lebih lengkap
+        const scorePercentage = Math.round(
+          (finalScore / finalTotalQuestions) * 100
+        )
+
+        // Tambahkan informasi kekuatan
+        let strengthsText = ""
+        if (strengthWithPercentages && strengthWithPercentages.length > 0) {
+          strengthsText = `\n\n${lang === "en" ? "Strengths" : "Kelebihan"}:\n`
+          strengthWithPercentages.slice(0, 2).forEach((item, index) => {
+            strengthsText += `- ${item.category} (${Math.round(item.percent)}%)`
+            if (index < Math.min(strengthWithPercentages.length - 1, 1))
+              strengthsText += "\n"
+          })
+        }
+
+        // Tambahkan informasi kelemahan
+        let weaknessesText = ""
+        if (weaknessCategories && weaknessCategories.length > 0) {
+          weaknessesText = `\n\n${
+            lang === "en" ? "Areas for Improvement" : "Area untuk Ditingkatkan"
+          }:\n`
+          weaknessCategories.slice(0, 2).forEach((item, index) => {
+            weaknessesText += `- ${item.category} (${Math.round(
+              item.percent
+            )}%)`
+            if (index < Math.min(weaknessCategories.length - 1, 1))
+              weaknessesText += "\n"
+          })
+        }
+
+        const shareText =
+          `${translations.shareAssessment}${
+            studentName ? ` - ${studentName}` : ""
+          }\n\n` +
+          `${
+            lang === "en" ? "Score" : "Skor"
+          }: ${finalScore}/${finalTotalQuestions} (${scorePercentage}%)` +
+          strengthsText +
+          weaknessesText +
+          `\n\n${lang === "en" ? "Date" : "Tanggal"}: ${new Date(
+            finalTimestamp
+          ).toLocaleDateString(lang === "en" ? "en-US" : "id-ID")}\n\n` +
+          `${
+            lang === "en"
+              ? "Check my detailed results at"
+              : "Lihat hasil lengkap saya di"
+          }:`
+
         // Periksa apakah browser mendukung berbagi file
         if (
           navigator.share &&
@@ -364,9 +413,7 @@ export default function ShareResults({
             // Share dengan file
             await navigator.share({
               title: translations.shareAssessment,
-              text: `${translations.shareAssessment} ${
-                studentName ? `- ${studentName}` : ""
-              }`,
+              text: shareText,
               url: window.location.href,
               files: [file]
             } as ShareData)
@@ -377,9 +424,7 @@ export default function ShareResults({
             // Fallback: berbagi tanpa file
             await navigator.share({
               title: translations.shareAssessment,
-              text: `${translations.shareAssessment} ${
-                studentName ? `- ${studentName}` : ""
-              }`,
+              text: shareText,
               url: window.location.href
             })
             console.log("Shared successfully with text only (fallback)")
@@ -388,9 +433,7 @@ export default function ShareResults({
           // Share tanpa file jika canShare tidak didukung
           await navigator.share({
             title: translations.shareAssessment,
-            text: `${translations.shareAssessment} ${
-              studentName ? `- ${studentName}` : ""
-            }`,
+            text: shareText,
             url: window.location.href
           })
           console.log("Shared successfully with text only")
@@ -437,13 +480,58 @@ export default function ShareResults({
       link.href = dataUrl
       link.click()
 
-      // Coba berbagi data URL sebagai teks
+      // Buat teks informasi yang lebih lengkap
+      const scorePercentage = Math.round(
+        (finalScore / finalTotalQuestions) * 100
+      )
+
+      // Tambahkan informasi kekuatan
+      let strengthsText = ""
+      if (strengthWithPercentages && strengthWithPercentages.length > 0) {
+        strengthsText = `\n\n${lang === "en" ? "Strengths" : "Kelebihan"}:\n`
+        strengthWithPercentages.slice(0, 2).forEach((item, index) => {
+          strengthsText += `- ${item.category} (${Math.round(item.percent)}%)`
+          if (index < Math.min(strengthWithPercentages.length - 1, 1))
+            strengthsText += "\n"
+        })
+      }
+
+      // Tambahkan informasi kelemahan
+      let weaknessesText = ""
+      if (weaknessCategories && weaknessCategories.length > 0) {
+        weaknessesText = `\n\n${
+          lang === "en" ? "Areas for Improvement" : "Area untuk Ditingkatkan"
+        }:\n`
+        weaknessCategories.slice(0, 2).forEach((item, index) => {
+          weaknessesText += `- ${item.category} (${Math.round(item.percent)}%)`
+          if (index < Math.min(weaknessCategories.length - 1, 1))
+            weaknessesText += "\n"
+        })
+      }
+
+      const shareText =
+        `${translations.shareAssessment}${
+          studentName ? ` - ${studentName}` : ""
+        }\n\n` +
+        `${
+          lang === "en" ? "Score" : "Skor"
+        }: ${finalScore}/${finalTotalQuestions} (${scorePercentage}%)` +
+        strengthsText +
+        weaknessesText +
+        `\n\n${lang === "en" ? "Date" : "Tanggal"}: ${new Date(
+          finalTimestamp
+        ).toLocaleDateString(lang === "en" ? "en-US" : "id-ID")}\n\n` +
+        `${
+          lang === "en"
+            ? "Check my detailed results at"
+            : "Lihat hasil lengkap saya di"
+        }:`
+
+      // Coba berbagi teks yang lebih informatif
       if (navigator.share) {
         await navigator.share({
           title: translations.shareAssessment,
-          text: `${translations.shareAssessment} ${
-            studentName ? `- ${studentName}` : ""
-          }`,
+          text: shareText,
           url: window.location.href
         })
         console.log("Shared with direct URL")
