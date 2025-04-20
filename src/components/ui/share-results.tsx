@@ -8,6 +8,7 @@ import ShareCard from "./share-card"
 import type { AssessmentResults } from "@/types/results"
 import { toPng, toBlob } from "html-to-image"
 import { Loader2, ShareIcon, Download, Copy, Check, Share2 } from "lucide-react"
+import Image from "next/image"
 
 interface ShareResultsProps {
   results?: AssessmentResults
@@ -594,11 +595,14 @@ export default function ShareResults({
                       animationComplete ? "opacity-100" : "opacity-30"
                     }`}
                   >
-                    <img
+                    <Image
                       src={imageUrl}
                       alt="Assessment Result"
                       className="max-w-full max-h-[300px] rounded-md object-contain"
-                      onLoad={() => {
+                      width={500}
+                      height={300}
+                      unoptimized
+                      onLoadingComplete={() => {
                         setAnimationComplete(true)
                         setIsDialogLoading(false)
                       }}
