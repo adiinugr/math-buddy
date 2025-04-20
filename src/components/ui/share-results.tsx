@@ -322,7 +322,7 @@ export default function ShareResults({
     }
   }
 
-  // Ubah implementasi handleShare dengan pendekatan yang sama seperti contoh benkaiser
+  // Ubah implementasi handleShare untuk mengatasi masalah gambar hitam
   const handleShare = async () => {
     try {
       setIsDialogLoading(true)
@@ -335,32 +335,71 @@ export default function ShareResults({
       }
 
       try {
-        // Gunakan toBlob untuk mendapatkan blob langsung dari elemen
-        const imageBlob = await toBlob(cardRef.current, {
-          quality: 0.95,
-          pixelRatio: 1.5,
-          skipAutoScale: true,
-          cacheBust: true
+        // Buat container sementara untuk rendering
+        const tempContainer = document.createElement("div")
+        tempContainer.style.position = "absolute"
+        tempContainer.style.left = "0"
+        tempContainer.style.top = "0"
+        tempContainer.style.width = "1000px"
+        tempContainer.style.height = "1250px"
+        tempContainer.style.zIndex = "-9999"
+        tempContainer.style.opacity = "1"
+        tempContainer.style.background = "white"
+        tempContainer.style.overflow = "hidden"
+
+        // Clone node untuk dirender
+        const cloneNode = cardRef.current.cloneNode(true) as HTMLElement
+        cloneNode.style.transform = "none"
+        cloneNode.style.position = "relative"
+        cloneNode.style.opacity = "1"
+        cloneNode.style.visibility = "visible"
+        cloneNode.style.width = "100%"
+        cloneNode.style.height = "100%"
+
+        // Tambahkan ke DOM untuk render
+        tempContainer.appendChild(cloneNode)
+        document.body.appendChild(tempContainer)
+
+        // Tunggu untuk memastikan render selesai
+        await new Promise((resolve) => setTimeout(resolve, 300))
+
+        // Gunakan toPng untuk menghasilkan data URL, yang lebih reliabel
+        const dataUrl = await toPng(cloneNode, {
+          quality: 1,
+          pixelRatio: 2,
+          cacheBust: true,
+          backgroundColor: "white",
+          canvasWidth: 1000,
+          canvasHeight: 1250,
+          skipAutoScale: false
         })
 
-        if (!imageBlob) {
-          throw new Error("Failed to generate blob")
-        }
+        // Hapus elemen sementara
+        document.body.removeChild(tempContainer)
+
+        // Konversi data URL ke blob
+        const response = await fetch(dataUrl)
+        const blob = await response.blob()
 
         // Buat file dari blob
-        const imageFile = new File([imageBlob], "mathbuddy-result.png", {
+        const file = new File([blob], "mathbuddy-result.png", {
           type: "image/png",
           lastModified: new Date().getTime()
         })
 
-        // Buat data share
-        const shareData = {
-          files: [imageFile]
-        }
-
         // Eksekusi share
         if (navigator.share) {
-          // Memberikan tipe yang lebih spesifik daripada 'any'
+          // Tambahkan title dan text untuk kasus fallback
+          const shareData = {
+            title: translations.shareAssessment,
+            text: `${translations.shareAssessment} ${
+              studentName ? `- ${studentName}` : ""
+            }`,
+            url: window.location.href,
+            files: [file]
+          }
+
+          // Memberikan tipe yang lebih spesifik
           await navigator.share(shareData as ShareData)
           console.log("Shared successfully")
         } else {
@@ -368,11 +407,10 @@ export default function ShareResults({
           handleDownload()
         }
       } catch (error) {
-        console.error("Share error:", error)
+        console.error("Error sharing:", error)
 
-        // Jika error bukan karena user membatalkan, fallback ke download
+        // Jika error bukan AbortError (user cancel), fallback ke download
         if (error instanceof Error && error.name !== "AbortError") {
-          console.log("Falling back to download due to:", error.name)
           handleDownload()
         }
       }
