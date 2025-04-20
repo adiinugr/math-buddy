@@ -252,9 +252,6 @@ export default function QuestionsPage() {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1)
     } else {
-      // Simpan pertanyaan ke localStorage agar dapat digunakan di halaman hasil
-      localStorage.setItem("assessmentQuestions", JSON.stringify(questions))
-
       // Calculate results and redirect
       const results = calculateResults()
       localStorage.setItem("assessmentResults", JSON.stringify(results))

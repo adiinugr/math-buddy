@@ -322,10 +322,9 @@ export default function ShareResults({
     }
   }
 
-  // Ubah implementasi handleShare untuk mengatasi glitch
+  // Ubah implementasi handleShare untuk mengatasi masalah gambar hitam
   const handleShare = async () => {
     try {
-      // Aktifkan loading overlay segera untuk menutupi glitch
       setIsDialogLoading(true)
 
       // Pastikan cardRef valid
@@ -336,8 +335,7 @@ export default function ShareResults({
       }
 
       try {
-        // Pengaturan lebih ketat untuk generasi gambar yang lebih baik
-        // Buat container sementara untuk rendering yang sepenuhnya tersembunyi
+        // Buat container sementara untuk rendering
         const tempContainer = document.createElement("div")
         tempContainer.style.position = "absolute"
         tempContainer.style.left = "0"
@@ -345,112 +343,65 @@ export default function ShareResults({
         tempContainer.style.width = "1000px"
         tempContainer.style.height = "1250px"
         tempContainer.style.zIndex = "-9999"
-        tempContainer.style.opacity = "0"
-        tempContainer.style.overflow = "hidden"
-        tempContainer.style.visibility = "hidden"
+        tempContainer.style.opacity = "1"
         tempContainer.style.background = "white"
-        tempContainer.style.transform = "scale(1)"
+        tempContainer.style.overflow = "hidden"
 
         // Clone node untuk dirender
         const cloneNode = cardRef.current.cloneNode(true) as HTMLElement
         cloneNode.style.transform = "none"
         cloneNode.style.position = "relative"
+        cloneNode.style.opacity = "1"
+        cloneNode.style.visibility = "visible"
         cloneNode.style.width = "100%"
         cloneNode.style.height = "100%"
-        cloneNode.style.margin = "0"
-        cloneNode.style.padding = "0"
-        cloneNode.style.boxShadow = "none"
-        cloneNode.style.background = "white"
-        cloneNode.style.display = "block"
 
         // Tambahkan ke DOM untuk render
         tempContainer.appendChild(cloneNode)
         document.body.appendChild(tempContainer)
 
-        // Tunggu yang lebih lama untuk memastikan render selesai
-        await new Promise((resolve) => setTimeout(resolve, 500))
+        // Tunggu untuk memastikan render selesai
+        await new Promise((resolve) => setTimeout(resolve, 300))
 
-        // Gunakan toBlob dengan pengaturan yang lebih unggul
-        let imageBlob = null
-        try {
-          imageBlob = await toBlob(cloneNode, {
-            cacheBust: true,
-            pixelRatio: 2,
-            backgroundColor: "white",
-            quality: 1.0,
-            canvasWidth: 1000,
-            canvasHeight: 1250,
-            skipAutoScale: false
-          })
-        } catch (blobError) {
-          console.error("Error generating blob:", blobError)
+        // Gunakan toPng untuk menghasilkan data URL, yang lebih reliabel
+        const dataUrl = await toPng(cloneNode, {
+          quality: 1,
+          pixelRatio: 2,
+          cacheBust: true,
+          backgroundColor: "white",
+          canvasWidth: 1000,
+          canvasHeight: 1250,
+          skipAutoScale: false
+        })
 
-          // Fallback ke metode toPng yang dicoba sebelumnya
-          const dataUrl = await toPng(cloneNode, {
-            cacheBust: true,
-            pixelRatio: 2,
-            backgroundColor: "white",
-            quality: 1.0,
-            canvasWidth: 1000,
-            canvasHeight: 1250,
-            skipAutoScale: false
-          })
-
-          // Konversi dataUrl ke blob
-          const response = await fetch(dataUrl)
-          imageBlob = await response.blob()
-        }
-
-        // Hapus elemen sementara secepat mungkin
+        // Hapus elemen sementara
         document.body.removeChild(tempContainer)
 
-        if (!imageBlob) {
-          throw new Error("Failed to generate image")
-        }
+        // Konversi data URL ke blob
+        const response = await fetch(dataUrl)
+        const blob = await response.blob()
 
         // Buat file dari blob
-        const file = new File([imageBlob], "mathbuddy-result.png", {
+        const file = new File([blob], "mathbuddy-result.png", {
           type: "image/png",
           lastModified: new Date().getTime()
         })
 
         // Eksekusi share
         if (navigator.share) {
-          try {
-            // Tambahkan title dan text untuk kasus fallback
-            const shareData = {
-              title: translations.shareAssessment,
-              text: `${translations.shareAssessment} ${
-                studentName ? `- ${studentName}` : ""
-              }`,
-              url: window.location.href,
-              files: [file]
-            }
-
-            // Berbagi dengan lebih kompleks, dengan pengecualian eksplisit untuk berbagi gambar
-            try {
-              // Coba berbagi dengan file
-              await navigator.share(shareData as ShareData)
-              console.log("Shared successfully with file")
-            } catch (shareError) {
-              console.error("Error sharing with file:", shareError)
-
-              // Fallback: jika gagal berbagi dengan file, coba berbagi tanpa file
-              const textOnlyShareData = {
-                title: translations.shareAssessment,
-                text: `${translations.shareAssessment} ${
-                  studentName ? `- ${studentName}` : ""
-                }`,
-                url: window.location.href
-              }
-
-              await navigator.share(textOnlyShareData)
-              console.log("Shared successfully without file (fallback)")
-            }
-          } catch (error) {
-            console.error("Final share error:", error)
-            handleDownload() // Fallback ke download
+          // Tambahkan title dan text untuk kasus fallback
+          const shareData = {
+            title: translations.shareAssessment,
+            text: `${translations.shareAssessment} ${
+              studentName ? `- ${studentName}` : ""
+            }`,
+            url: window.location.href,
+            files: [file]
           }
+
+          // Memberikan tipe yang lebih spesifik
+          await navigator.share(shareData as ShareData)
+          console.log("Shared successfully")
         } else {
           console.log("Web Share API not supported")
           handleDownload()
@@ -464,7 +415,6 @@ export default function ShareResults({
         }
       }
     } finally {
-      // Pastikan loading overlay dihilangkan di akhir
       setIsDialogLoading(false)
     }
   }
@@ -612,19 +562,16 @@ export default function ShareResults({
       {/* Hidden component for image generation */}
       <div
         style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
+          position: "absolute",
+          top: "-9999px",
+          left: "-9999px",
           visibility: "hidden",
           pointerEvents: "none",
           opacity: "0",
           transform: "scale(1)",
           transformOrigin: "0 0",
           width: "1000px",
-          height: "1250px",
-          zIndex: "-9999",
-          overflow: "hidden",
-          backgroundColor: "#ffffff"
+          height: "1250px"
         }}
       >
         <ShareCard
