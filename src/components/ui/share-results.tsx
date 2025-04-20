@@ -7,8 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs"
 import ShareCard from "./share-card"
 import type { AssessmentResults } from "@/types/results"
 import { toPng, toBlob } from "html-to-image"
-import { FaTwitter, FaFacebook, FaWhatsapp } from "react-icons/fa"
-import { Loader2, ShareIcon } from "lucide-react"
+import { Loader2, ShareIcon, Download, Copy, Check, Share2 } from "lucide-react"
 
 interface ShareResultsProps {
   results?: AssessmentResults
@@ -18,6 +17,14 @@ interface ShareResultsProps {
   totalQuestions?: number
   strengthCategories?: string[]
   timestamp?: string
+}
+
+// Definisi tipe untuk Web Share API
+interface ShareData {
+  files?: File[]
+  title?: string
+  text?: string
+  url?: string
 }
 
 export default function ShareResults({
@@ -315,6 +322,65 @@ export default function ShareResults({
     }
   }
 
+  // Ubah implementasi handleShare dengan pendekatan yang sama seperti contoh benkaiser
+  const handleShare = async () => {
+    try {
+      setIsDialogLoading(true)
+
+      // Pastikan cardRef valid
+      if (!cardRef.current) {
+        setIsDialogLoading(false)
+        console.error("Card reference not available")
+        return
+      }
+
+      try {
+        // Gunakan toBlob untuk mendapatkan blob langsung dari elemen
+        const imageBlob = await toBlob(cardRef.current, {
+          quality: 0.95,
+          pixelRatio: 1.5,
+          skipAutoScale: true,
+          cacheBust: true
+        })
+
+        if (!imageBlob) {
+          throw new Error("Failed to generate blob")
+        }
+
+        // Buat file dari blob
+        const imageFile = new File([imageBlob], "mathbuddy-result.png", {
+          type: "image/png",
+          lastModified: new Date().getTime()
+        })
+
+        // Buat data share
+        const shareData = {
+          files: [imageFile]
+        }
+
+        // Eksekusi share
+        if (navigator.share) {
+          // Memberikan tipe yang lebih spesifik daripada 'any'
+          await navigator.share(shareData as ShareData)
+          console.log("Shared successfully")
+        } else {
+          console.log("Web Share API not supported")
+          handleDownload()
+        }
+      } catch (error) {
+        console.error("Share error:", error)
+
+        // Jika error bukan karena user membatalkan, fallback ke download
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.log("Falling back to download due to:", error.name)
+          handleDownload()
+        }
+      }
+    } finally {
+      setIsDialogLoading(false)
+    }
+  }
+
   // Create a function to preload the ShareCard component
   useEffect(() => {
     // Preload the card component when component mounts
@@ -323,114 +389,6 @@ export default function ShareResults({
       // Clean up any resources if needed when component unmounts
     }
   }, [])
-
-  // Tambahkan fungsi untuk berbagi ke WhatsApp dengan gambar dan link sekaligus
-  const shareToWhatsApp = async () => {
-    if (!imageUrl) {
-      // Jika gambar belum dibuat, generate dulu
-      if (!isGenerating) {
-        setIsDialogLoading(true)
-        await generateImage()
-      }
-      // Tunggu sampai proses generate selesai
-      return
-    }
-
-    try {
-      setIsDialogLoading(true)
-
-      // Konversi imageUrl menjadi blob untuk di-download
-      let imageBlob
-      if (imageUrl.startsWith("blob:")) {
-        const response = await fetch(imageUrl)
-        imageBlob = await response.blob()
-      } else {
-        const response = await fetch(imageUrl)
-        imageBlob = await response.blob()
-      }
-
-      // Simpan gambar ke device terlebih dahulu
-      const blobUrl = URL.createObjectURL(imageBlob)
-      const tempLink = document.createElement("a")
-      tempLink.href = blobUrl
-      tempLink.download = `mathbuddy-assessment-${new Date().getTime()}.png`
-      document.body.appendChild(tempLink)
-      tempLink.click()
-      document.body.removeChild(tempLink)
-
-      // Tambahkan notifikasi langsung dalam dialog
-      const notification = document.createElement("div")
-      notification.className =
-        "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50"
-      notification.innerHTML = `
-        <div class="flex items-center">
-          <div class="py-1"><svg class="fill-current h-6 w-6 text-green-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM6.7 9.29L9 11.6l4.3-4.3 1.4 1.42L9 14.4l-3.7-3.7 1.4-1.42z"/></svg></div>
-          <div>
-            <p class="font-bold">${
-              lang === "en" ? "Image Downloaded" : "Gambar Diunduh"
-            }</p>
-            <p class="text-sm">${
-              lang === "en"
-                ? "Please attach it manually to WhatsApp"
-                : "Silakan lampirkan secara manual ke WhatsApp"
-            }</p>
-          </div>
-        </div>
-      `
-      document.body.appendChild(notification)
-
-      // Hapus notifikasi setelah beberapa detik
-      setTimeout(() => {
-        document.body.removeChild(notification)
-      }, 5000)
-
-      // Tunggu sedikit supaya user melihat notifikasi
-      setTimeout(() => {
-        // Buka WhatsApp dengan link
-        const shareText = `${translations.shareAssessment}: ${window.location.href}`
-        window.open(
-          `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`
-        )
-        setIsDialogLoading(false)
-      }, 1200)
-    } catch (error) {
-      console.error("Error sharing to WhatsApp:", error)
-
-      // Fallback ke metode share biasa
-      window.open(
-        `https://api.whatsapp.com/send?text=${encodeURIComponent(
-          `${translations.shareAssessment}: ${window.location.href}`
-        )}`
-      )
-      setIsDialogLoading(false)
-
-      // Tambahkan notifikasi error langsung dalam dialog
-      const errorNotification = document.createElement("div")
-      errorNotification.className =
-        "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50"
-      errorNotification.innerHTML = `
-        <div class="flex items-center">
-          <div class="py-1"><svg class="fill-current h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm1.41-1.41A8 8 0 1 0 15.66 4.34 8 8 0 0 0 4.34 15.66zm9.9-8.49L11.41 10l2.83 2.83-1.41 1.41L10 11.41l-2.83 2.83-1.41-1.41L8.59 10 5.76 7.17l1.41-1.41L10 8.59l2.83-2.83 1.41 1.41z"/></svg></div>
-          <div>
-            <p class="font-bold">${
-              lang === "en" ? "Share Error" : "Error Berbagi"
-            }</p>
-            <p class="text-sm">${
-              lang === "en"
-                ? "Could not share with image. Only the link has been shared."
-                : "Tidak dapat berbagi dengan gambar. Hanya link yang dibagikan."
-            }</p>
-          </div>
-        </div>
-      `
-      document.body.appendChild(errorNotification)
-
-      // Hapus notifikasi error setelah beberapa detik
-      setTimeout(() => {
-        document.body.removeChild(errorNotification)
-      }, 5000)
-    }
-  }
 
   return (
     <>
@@ -492,53 +450,26 @@ export default function ShareResults({
               </div>
 
               {imageUrl && (
-                <div className="flex gap-3 justify-between">
+                <div className="flex justify-between w-full gap-3">
                   <Button
                     variant="outline"
-                    className="flex-1"
+                    className="flex items-center gap-2 flex-1"
                     onClick={handleDownload}
                     disabled={isGenerating}
                   >
+                    <Download className="h-4 w-4" />
                     {translations.downloadImage}
                   </Button>
-                  <div className="flex-1 flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => {
-                        window.open(
-                          `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-                            window.location.href
-                          )}`
-                        )
-                      }}
-                      disabled={isGenerating}
-                    >
-                      <FaTwitter />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => {
-                        window.open(
-                          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                            window.location.href
-                          )}`
-                        )
-                      }}
-                      disabled={isGenerating}
-                    >
-                      <FaFacebook />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={shareToWhatsApp}
-                      disabled={isGenerating}
-                    >
-                      <FaWhatsapp />
-                    </Button>
-                  </div>
+
+                  <Button
+                    variant="default"
+                    className="flex items-center gap-2 flex-1"
+                    onClick={handleShare}
+                    disabled={isGenerating}
+                  >
+                    <Share2 className="h-4 w-4" />
+                    {lang === "en" ? "Share" : "Bagikan"}
+                  </Button>
                 </div>
               )}
             </TabsContent>
@@ -565,56 +496,25 @@ export default function ShareResults({
                 </div>
               </div>
 
-              <div className="flex gap-3 justify-between">
+              <div className="flex justify-center w-full">
                 <Button
                   variant={copySuccess ? "default" : "outline"}
-                  className={`flex-1 transition-all duration-200 ${
+                  className={`flex items-center gap-2 w-full max-w-md transition-all duration-200 ${
                     copySuccess ? "bg-green-600 hover:bg-green-700" : ""
                   }`}
                   onClick={handleCopyLink}
                 >
+                  {copySuccess ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                   {copySuccess
                     ? lang === "en"
                       ? "Copied!"
                       : "Tersalin!"
                     : translations.copyLink}
                 </Button>
-
-                <div className="flex-1 flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => {
-                      window.open(
-                        `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-                          window.location.href
-                        )}`
-                      )
-                    }}
-                  >
-                    <FaTwitter />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => {
-                      window.open(
-                        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                          window.location.href
-                        )}`
-                      )
-                    }}
-                  >
-                    <FaFacebook />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={shareToWhatsApp}
-                  >
-                    <FaWhatsapp />
-                  </Button>
-                </div>
               </div>
             </TabsContent>
           </Tabs>
