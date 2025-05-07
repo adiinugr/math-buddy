@@ -1,3 +1,23 @@
+export type SubcategoryKey =
+  | "equations"
+  | "inequalities"
+  | "polynomials"
+  | "functions"
+  | "shapes"
+  | "angles"
+  | "area"
+  | "volume"
+  | "operations"
+  | "fractions"
+  | "decimals"
+  | "percentages"
+  | "derivatives"
+  | "integrals"
+  | "limits"
+  | "applications"
+
+export type CategoryKey = "algebra" | "geometry" | "arithmetic" | "calculus"
+
 export type AssessmentResults = {
   totalScore: number
   totalQuestions: number
@@ -8,10 +28,16 @@ export type AssessmentResults = {
     percentage?: number
   }>
   categories: {
-    algebra: { correct: number; total: number }
-    geometry: { correct: number; total: number }
-    arithmetic: { correct: number; total: number }
-    calculus: { correct: number; total: number }
+    [key in CategoryKey]: {
+      correct: number
+      total: number
+      subcategories: {
+        [key in SubcategoryKey]?: {
+          correct: number
+          total: number
+        }
+      }
+    }
   }
   difficulties: {
     easy: { correct: number; total: number }

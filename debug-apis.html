@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>API Debug Tool</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      pre {
+        background: #f5f5f5;
+        padding: 10px;
+        overflow: auto;
+      }
+      button {
+        padding: 10px;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>API Debug Tool</h2>
+    <div>
+      <h3>Teacher View API</h3>
+      <input
+        id="quizId"
+        placeholder="Quiz ID"
+        style="width: 300px"
+        value="cmab0qm950008l2rwajf1456w"
+      />
+      <input
+        id="participantId"
+        placeholder="Participant ID"
+        style="width: 300px"
+        value="cmabwojkx0007l2uscdufs01g"
+      />
+      <button onclick="checkTeacherAPI()">Check Teacher View API</button>
+      <pre id="teacherResult">Results will appear here</pre>
+    </div>
+    <div>
+      <h3>Student View API</h3>
+      <button onclick="checkStudentAPI()">Check Student View API</button>
+      <pre id="studentResult">Results will appear here</pre>
+    </div>
+
+    <script>
+      async function checkTeacherAPI() {
+        const quizId = document.getElementById("quizId").value
+        const participantId = document.getElementById("participantId").value
+        try {
+          const response = await fetch(
+            `/api/quizzes/${quizId}/results?participantId=${participantId}`
+          )
+          const data = await response.json()
+          document.getElementById("teacherResult").textContent =
+            `Has categories: ${Boolean(data.categories)}\n` +
+            `Categories: ${Object.keys(data.categories).join(", ")}\n` +
+            `First question category: ${data.questions[0].category}\n` +
+            `First question subcategory: ${data.questions[0].subcategory}\n` +
+            `Questions with categories: ${
+              data.questions.filter((q) => q.category).length
+            }/${data.questions.length}`
+        } catch (e) {
+          document.getElementById(
+            "teacherResult"
+          ).textContent = `Error: ${e.message}`
+        }
+      }
+
+      async function checkStudentAPI() {
+        const participantId = document.getElementById("participantId").value
+        try {
+          const response = await fetch(
+            `/api/quizzes/result?participantId=${participantId}`
+          )
+          const data = await response.json()
+          document.getElementById("studentResult").textContent =
+            `Has categories: ${Boolean(data.categories)}\n` +
+            `Categories: ${Object.keys(data.categories).join(", ")}\n` +
+            `First question category: ${data.questions[0].category}\n` +
+            `First question subcategory: ${data.questions[0].subcategory}\n` +
+            `Questions with categories: ${
+              data.questions.filter((q) => q.category).length
+            }/${data.questions.length}`
+        } catch (e) {
+          document.getElementById(
+            "studentResult"
+          ).textContent = `Error: ${e.message}`
+        }
+      }
+    </script>
+  </body>
+</html>

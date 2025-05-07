@@ -3,6 +3,7 @@ const id = {
     title: "Math Buddy",
     login: "Masuk",
     register: "Daftar",
+    logout: "Keluar",
     language: "Bahasa",
     footer: {
       copyright: "© 2023 Math Buddy",
@@ -16,7 +17,10 @@ const id = {
       title: "Tingkatkan kemampuan matematikamu dengan Math Buddy",
       description:
         "Alat diagnostik kami mengevaluasi keterampilan matematika Anda dan memberikan rekomendasi yang dipersonalisasi untuk membantu Anda belajar dan berkembang. Mulai dengan beberapa langkah sederhana!",
-      cta: "Mulai Diagnostik"
+      cta: "Mulai Diagnostik",
+      login: "Masuk",
+      register: "Daftar",
+      dashboard: "Ke Dashboard"
     },
     howItWorks: {
       title: "Cara Kerjanya",
@@ -69,7 +73,12 @@ const id = {
     },
     finalCta: {
       title: "Siap untuk menemukan potensi matematika Anda?",
-      button: "Mulai Penilaian Anda Sekarang"
+      description:
+        "Bergabunglah dengan ribuan siswa yang telah meningkatkan keterampilan matematika mereka dengan alat penilaian dan pembelajaran yang dipersonalisasi. Mulai perjalanan Anda hari ini!",
+      button: "Mulai Penilaian Anda Sekarang",
+      dashboard: "Ke Dashboard",
+      register: "Daftar Sekarang",
+      login: "Masuk"
     }
   },
   start: {
@@ -138,6 +147,67 @@ const id = {
       proficient: "Cakap",
       basic: "Dasar",
       developing: "Berkembang"
+    }
+  },
+  generate: {
+    title: "Buat Soal Matematika",
+    settings: "Pengaturan Soal",
+    settingsDescription: "Konfigurasi parameter untuk membuat soal matematika",
+    category: "Kategori Matematika",
+    selectCategory: "Pilih kategori",
+    difficulty: "Tingkat Kesulitan",
+    selectDifficulty: "Pilih tingkat kesulitan",
+    questionCount: "Jumlah Soal",
+    selectCount: "Pilih jumlah soal",
+    questions: "Soal",
+    generate: "Buat Soal",
+    generating: "Membuat Soal...",
+    generatedQuestions: "Soal yang Dibuat",
+    generatedDescription:
+      "Berikut adalah soal yang dibuat berdasarkan pengaturan Anda",
+    error: {
+      selectCategory: "Silakan pilih kategori",
+      generateFailed: "Gagal membuat soal. Silakan coba lagi."
+    },
+    publish: "Terbitkan Kuis",
+    publishing: "Menerbitkan...",
+    publishFailed: "Gagal menerbitkan kuis. Silakan coba lagi."
+  },
+  dashboard: {
+    title: "Kuis Saya",
+    createQuiz: "Buat Kuis Baru",
+    generateQuestions: "Buat Soal",
+    noQuizzes: "Belum ada kuis",
+    noQuizzesDescription: "Mulai dengan membuat kuis baru.",
+    quizCode: "Kode Kuis:",
+    active: "Aktif",
+    inactive: "Tidak Aktif",
+    viewResults: "Lihat Hasil",
+    edit: "Edit",
+    delete: "Hapus",
+    cancel: "Batal",
+    deleteConfirmTitle: "Hapus Kuis",
+    deleteConfirmDescription:
+      "Apakah Anda yakin ingin menghapus kuis ini? Tindakan ini tidak dapat dibatalkan."
+  },
+  edit: {
+    title: "Edit Kuis",
+    quizDetails: "Detail Kuis",
+    quizDescription: "Perbarui informasi dan pertanyaan kuis Anda",
+    quizTitle: "Judul Kuis",
+    description: "Deskripsi",
+    questions: "Pertanyaan",
+    question: "Pertanyaan",
+    questionText: "Teks Pertanyaan",
+    options: "Pilihan",
+    addQuestion: "Tambah Pertanyaan",
+    remove: "Hapus",
+    cancel: "Batal",
+    save: "Simpan Perubahan",
+    saving: "Menyimpan...",
+    error: {
+      loadFailed: "Gagal memuat kuis",
+      saveFailed: "Gagal menyimpan kuis. Silakan coba lagi."
     }
   }
 }

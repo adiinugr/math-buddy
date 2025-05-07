@@ -3,6 +3,7 @@ const en = {
     title: "Math Buddy",
     login: "Login",
     register: "Register",
+    logout: "Logout",
     language: "Language",
     footer: {
       copyright: "© 2023 Math Buddy",
@@ -16,7 +17,10 @@ const en = {
       title: "Improve your math skills with Math Buddy",
       description:
         "Our diagnostic tool evaluates your mathematical skills and provides personalized recommendations to help you learn and grow. Get started with just a few quick steps!",
-      cta: "Start Diagnostic"
+      cta: "Start Diagnostic",
+      login: "Login",
+      register: "Register",
+      dashboard: "Go to Dashboard"
     },
     howItWorks: {
       title: "How It Works",
@@ -69,7 +73,12 @@ const en = {
     },
     finalCta: {
       title: "Ready to discover your math potential?",
-      button: "Start Your Assessment Now"
+      description:
+        "Join thousands of students who have improved their math skills with our personalized assessment and learning tools. Start your journey today!",
+      button: "Start Your Assessment Now",
+      dashboard: "Go to Dashboard",
+      register: "Register Now",
+      login: "Login"
     }
   },
   start: {
@@ -137,6 +146,87 @@ const en = {
       proficient: "Proficient",
       basic: "Basic",
       developing: "Developing"
+    }
+  },
+  quiz: {
+    join: {
+      title: "Join Quiz",
+      description:
+        "Enter the quiz code provided by your teacher and your name to get started.",
+      code: "Quiz Code",
+      name: "Your Name",
+      button: "Join Quiz",
+      loading: "Joining..."
+    },
+    submit: {
+      button: "Submit Answers",
+      loading: "Submitting..."
+    },
+    submitted: {
+      title: "Quiz Submitted!",
+      description: "Thank you for participating in the quiz."
+    }
+  },
+  generate: {
+    title: "Generate Math Questions",
+    settings: "Question Settings",
+    settingsDescription:
+      "Configure the parameters for generating math questions",
+    category: "Math Category",
+    selectCategory: "Select a category",
+    difficulty: "Difficulty Level",
+    selectDifficulty: "Select difficulty",
+    questionCount: "Number of Questions",
+    selectCount: "Select number of questions",
+    questions: "Questions",
+    generate: "Generate Questions",
+    generating: "Generating Questions...",
+    generatedQuestions: "Generated Questions",
+    generatedDescription:
+      "Here are the questions generated based on your settings",
+    error: {
+      selectCategory: "Please select a category",
+      generateFailed: "Failed to generate questions. Please try again."
+    },
+    publish: "Publish Quiz",
+    publishing: "Publishing...",
+    publishFailed: "Failed to publish quiz. Please try again."
+  },
+  dashboard: {
+    title: "My Quizzes",
+    createQuiz: "Create New Quiz",
+    generateQuestions: "Generate Questions",
+    noQuizzes: "No quizzes yet",
+    noQuizzesDescription: "Get started by creating a new quiz.",
+    quizCode: "Quiz Code:",
+    active: "Active",
+    inactive: "Inactive",
+    viewResults: "View Results",
+    edit: "Edit",
+    delete: "Delete",
+    cancel: "Cancel",
+    deleteConfirmTitle: "Delete Quiz",
+    deleteConfirmDescription:
+      "Are you sure you want to delete this quiz? This action cannot be undone."
+  },
+  edit: {
+    title: "Edit Quiz",
+    quizDetails: "Quiz Details",
+    quizDescription: "Update your quiz information and questions",
+    quizTitle: "Quiz Title",
+    description: "Description",
+    questions: "Questions",
+    question: "Question",
+    questionText: "Question Text",
+    options: "Options",
+    addQuestion: "Add Question",
+    remove: "Remove",
+    cancel: "Cancel",
+    save: "Save Changes",
+    saving: "Saving...",
+    error: {
+      loadFailed: "Failed to load quiz",
+      saveFailed: "Failed to save quiz. Please try again."
     }
   }
 }

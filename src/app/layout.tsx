@@ -1,44 +1,87 @@
-"use client"
-
+import type { Metadata } from "next"
 import { Montserrat, Raleway } from "next/font/google"
 import "./globals.css"
-import Header from "@/components/Header"
-import Footer from "@/components/Footer"
+import dynamic from "next/dynamic"
+import { Suspense } from "react"
+import { Toaster } from "sonner"
 
+// Optimize font loading
 const montserrat = Montserrat({
-  variable: "--font-montserrat",
   subsets: ["latin"],
-  display: "swap"
+  variable: "--font-montserrat",
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "arial"]
 })
 
 const raleway = Raleway({
-  variable: "--font-raleway",
   subsets: ["latin"],
-  display: "swap"
+  variable: "--font-raleway",
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "arial"]
 })
+
+// Loading skeleton component
+const LoadingSkeleton = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
+    <div className="flex flex-col items-center gap-4">
+      <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
+      <p className="text-gray-700 animate-pulse">Memuat...</p>
+    </div>
+  </div>
+)
+
+// Dynamically import LayoutContent with loading fallback
+const LayoutContent = dynamic(() => import("@/components/LayoutContent"), {
+  ssr: true,
+  loading: () => <LoadingSkeleton />
+})
+
+export const metadata: Metadata = {
+  title: "Alat Diagnostik Matematika",
+  description:
+    "Platform penilaian diagnostik matematika interaktif untuk siswa dan guru",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png"
+  },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    title: "Alat Diagnostik Matematika",
+    description:
+      "Platform penilaian diagnostik matematika interaktif untuk siswa dan guru",
+    siteName: "Alat Diagnostik Matematika"
+  }
+}
 
 export default function RootLayout({
   children
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="id" className={`${montserrat.variable} ${raleway.variable}`}>
       <head>
-        <title>Math Buddy - Mathematics Diagnostic Tool</title>
-        <meta
-          name="description"
-          content="Assessment and diagnostic tool to identify your math strengths and areas for improvement"
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+          crossOrigin="anonymous"
         />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="preload" href="/favicon.ico" as="image" />
       </head>
-      <body
-        className={`${montserrat.variable} ${raleway.variable} antialiased bg-background text-foreground font-sans`}
-      >
-        <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </div>
+      <body className="antialiased bg-background text-foreground font-sans">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <LayoutContent>{children}</LayoutContent>
+        </Suspense>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   )

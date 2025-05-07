@@ -6,8 +6,20 @@ import { useTranslation } from "@/hooks/useTranslation"
 import { Button } from "@/components/ui/button"
 import { MathJax } from "@/components/MathJax"
 
-// Define the question types
-type Question = {
+interface SubcategoryStats {
+  correct: number
+  total: number
+}
+
+interface CategoryStats {
+  correct: number
+  total: number
+  subcategories: {
+    [key: string]: SubcategoryStats
+  }
+}
+
+interface Question {
   id: number
   text: string
   latex?: boolean // Flag untuk mengidentifikasi jika pertanyaan menggunakan LaTeX
@@ -241,33 +253,107 @@ export default function QuestionsPage() {
     setLoading(false)
   }, [router])
 
-  const handleAnswer = (option: string) => {
+  const handleAnswer = async (option: string) => {
     // Record answer
     setAnswers((prev) => ({
       ...prev,
       [currentQuestion]: option
     }))
 
-    // Move to next question or results
+    // Move to next question or submit
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1)
     } else {
-      // Simpan pertanyaan ke localStorage agar dapat digunakan di halaman hasil
-      localStorage.setItem("assessmentQuestions", JSON.stringify(questions))
+      try {
+        // Prepare answers for submission
+        const formattedAnswers = Object.entries(answers).map(
+          ([questionId, answer]) => ({
+            questionId: questions[parseInt(questionId)].id.toString(),
+            answer: questions[parseInt(questionId)].options.indexOf(answer)
+          })
+        )
 
-      // Calculate results and redirect
-      const results = calculateResults()
-      localStorage.setItem("assessmentResults", JSON.stringify(results))
-      router.push("/assessment/results")
+        // Get participant ID from URL or localStorage
+        const urlParams = new URLSearchParams(window.location.search)
+        const participantId =
+          urlParams.get("participantId") ||
+          localStorage.getItem("participantId")
+
+        if (!participantId) {
+          console.error("No participant ID found")
+          return
+        }
+
+        // Submit answers to API
+        const response = await fetch("/api/quizzes/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            participantId,
+            answers: formattedAnswers
+          })
+        })
+
+        const result = await response.json()
+        console.log("Quiz submission response:", result)
+
+        // Store questions and results
+        localStorage.setItem("assessmentQuestions", JSON.stringify(questions))
+        const results = calculateResults()
+        localStorage.setItem("assessmentResults", JSON.stringify(results))
+
+        // Redirect to results page
+        router.push("/assessment/results")
+      } catch (error) {
+        console.error("Error submitting quiz:", error)
+      }
     }
   }
 
   const calculateResults = () => {
-    const categories = {
-      algebra: { correct: 0, total: 0 },
-      geometry: { correct: 0, total: 0 },
-      arithmetic: { correct: 0, total: 0 },
-      calculus: { correct: 0, total: 0 }
+    const categories: Record<string, CategoryStats> = {
+      algebra: {
+        correct: 0,
+        total: 0,
+        subcategories: {
+          equations: { correct: 0, total: 0 },
+          inequalities: { correct: 0, total: 0 },
+          polynomials: { correct: 0, total: 0 },
+          functions: { correct: 0, total: 0 }
+        }
+      },
+      geometry: {
+        correct: 0,
+        total: 0,
+        subcategories: {
+          shapes: { correct: 0, total: 0 },
+          angles: { correct: 0, total: 0 },
+          area: { correct: 0, total: 0 },
+          volume: { correct: 0, total: 0 }
+        }
+      },
+      arithmetic: {
+        correct: 0,
+        total: 0,
+        subcategories: {
+          operations: { correct: 0, total: 0 },
+          fractions: { correct: 0, total: 0 },
+          decimals: { correct: 0, total: 0 },
+          percentages: { correct: 0, total: 0 }
+        }
+      },
+      calculus: {
+        correct: 0,
+        total: 0,
+        subcategories: {
+          derivatives: { correct: 0, total: 0 },
+          integrals: { correct: 0, total: 0 },
+          limits: { correct: 0, total: 0 },
+          applications: { correct: 0, total: 0 }
+        }
+      }
     }
 
     const difficulties = {
@@ -289,6 +375,15 @@ export default function QuestionsPage() {
         totalCorrect += 1
       }
 
+      // Update subcategory stats
+      const subcategory = getSubcategory(question)
+      if (subcategory) {
+        categories[question.category].subcategories[subcategory].total += 1
+        if (isCorrect) {
+          categories[question.category].subcategories[subcategory].correct += 1
+        }
+      }
+
       // Update difficulty stats
       difficulties[question.difficulty].total += 1
       if (isCorrect) {
@@ -303,6 +398,139 @@ export default function QuestionsPage() {
       difficulties,
       answers,
       timestamp: new Date().toISOString()
+    }
+  }
+
+  // Helper function to determine subcategory based on question content
+  const getSubcategory = (question: Question): string | null => {
+    const text = question.text.toLowerCase()
+
+    switch (question.category) {
+      case "algebra":
+        if (
+          text.includes("=") ||
+          text.includes("solve for") ||
+          text.includes("equation")
+        )
+          return "equations"
+        if (
+          text.includes(">") ||
+          text.includes("<") ||
+          text.includes("inequality") ||
+          text.includes("≥") ||
+          text.includes("≤")
+        )
+          return "inequalities"
+        if (
+          text.includes("polynomial") ||
+          text.includes("factor") ||
+          text.includes("quadratic") ||
+          text.includes("binomial")
+        )
+          return "polynomials"
+        if (
+          text.includes("function") ||
+          text.includes("f(x)") ||
+          text.includes("graph") ||
+          text.includes("domain") ||
+          text.includes("range")
+        )
+          return "functions"
+        return "equations" // Default to equations if no specific match
+      case "geometry":
+        if (
+          text.includes("shape") ||
+          text.includes("triangle") ||
+          text.includes("circle") ||
+          text.includes("square") ||
+          text.includes("rectangle") ||
+          text.includes("polygon")
+        )
+          return "shapes"
+        if (
+          text.includes("angle") ||
+          text.includes("degree") ||
+          text.includes("radian") ||
+          text.includes("protractor")
+        )
+          return "angles"
+        if (
+          text.includes("area") ||
+          text.includes("surface") ||
+          text.includes("perimeter")
+        )
+          return "area"
+        if (
+          text.includes("volume") ||
+          text.includes("capacity") ||
+          text.includes("3d")
+        )
+          return "volume"
+        return "shapes" // Default to shapes if no specific match
+      case "arithmetic":
+        if (
+          text.includes("+") ||
+          text.includes("-") ||
+          text.includes("×") ||
+          text.includes("÷") ||
+          text.includes("*") ||
+          text.includes("/") ||
+          text.includes("operation")
+        )
+          return "operations"
+        if (
+          text.includes("fraction") ||
+          text.includes("numerator") ||
+          text.includes("denominator") ||
+          text.includes("/")
+        )
+          return "fractions"
+        if (
+          text.includes("decimal") ||
+          text.includes("point") ||
+          text.includes(".")
+        )
+          return "decimals"
+        if (
+          text.includes("percent") ||
+          text.includes("%") ||
+          text.includes("percentage")
+        )
+          return "percentages"
+        return "operations" // Default to operations if no specific match
+      case "calculus":
+        if (
+          text.includes("derivative") ||
+          text.includes("differentiate") ||
+          text.includes("rate of change") ||
+          text.includes("slope")
+        )
+          return "derivatives"
+        if (
+          text.includes("integral") ||
+          text.includes("integrate") ||
+          text.includes("area under") ||
+          text.includes("antiderivative")
+        )
+          return "integrals"
+        if (
+          text.includes("limit") ||
+          text.includes("approaches") ||
+          text.includes("tends to") ||
+          text.includes("∞")
+        )
+          return "limits"
+        if (
+          text.includes("application") ||
+          text.includes("optimization") ||
+          text.includes("related rates") ||
+          text.includes("max") ||
+          text.includes("min")
+        )
+          return "applications"
+        return "derivatives" // Default to derivatives if no specific match
+      default:
+        return null
     }
   }
 

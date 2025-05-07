@@ -1,7 +1,7 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-import { Language, translations } from "@/translations"
+import { useCallback } from "react"
+import { translations } from "@/translations"
 import { get } from "lodash"
 
 // Helper to replace placeholders in translation strings
@@ -17,25 +17,12 @@ const replacePlaceholders = (
 }
 
 export const useTranslation = () => {
-  const [lang, setLang] = useState<Language>("en")
+  // Always use Indonesian language
+  const lang = "id"
 
-  useEffect(() => {
-    // Try to get language from localStorage
-    const savedLang = localStorage.getItem("language") as Language
-    if (savedLang && (savedLang === "en" || savedLang === "id")) {
-      setLang(savedLang)
-    } else {
-      // Fallback to browser language
-      const browserLang = navigator.language.split("-")[0]
-      setLang(browserLang === "id" ? "id" : "en")
-    }
-  }, [])
-
-  const changeLanguage = useCallback((newLang: Language) => {
-    localStorage.setItem("language", newLang)
-    setLang(newLang)
-    // Force page refresh to update all translations
-    window.location.reload()
+  const changeLanguage = useCallback(() => {
+    // This function is now a no-op since we always use Indonesian
+    return
   }, [])
 
   const t = useCallback(
