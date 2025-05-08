@@ -14,10 +14,10 @@ import {
   Edit,
   BarChart2,
   Trash2,
-  Play,
   Plus,
   Calendar,
-  ArrowLeft
+  ArrowLeft,
+  PenTool
 } from "lucide-react"
 import {
   AlertDialog,
@@ -250,11 +250,13 @@ export default function QuizzesPage() {
                       </Button>
                     </div>
                     <Button
-                      onClick={() => router.push(`/quizzes/${quiz.id}/live`)}
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-lg shadow-blue-500/20 group w-full flex items-center justify-center gap-1 h-9"
+                      onClick={() =>
+                        router.push(`/quizzes/${quiz.id}/assessment`)
+                      }
+                      className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white border-0 shadow-lg shadow-green-500/20 group w-full flex items-center justify-center gap-1 h-9"
                     >
-                      <Play className="h-3.5 w-3.5" />
-                      Jalankan Kuis
+                      <PenTool className="h-3.5 w-3.5" />
+                      Mulai Penilaian
                     </Button>
                   </CardFooter>
                 </Card>

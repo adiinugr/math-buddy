@@ -39,14 +39,9 @@ const LayoutContent = dynamic(() => import("@/components/LayoutContent"), {
 })
 
 export const metadata: Metadata = {
-  title: "Alat Diagnostik Matematika",
+  title: "Math Buddy - Alat Diagnostik Matematika",
   description:
     "Platform penilaian diagnostik matematika interaktif untuk siswa dan guru",
-  manifest: "/manifest.json",
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png"
-  },
   openGraph: {
     type: "website",
     locale: "id_ID",

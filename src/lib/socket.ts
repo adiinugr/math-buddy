@@ -126,6 +126,14 @@ export const connectSocket = (config: SocketConfig = {}): Socket => {
     // If we have a disconnected socket, try to reconnect it
     if (socket) {
       console.log("Socket exists but disconnected, attempting to reconnect")
+
+      // If the socket is currently reconnecting, don't try to reconnect again
+      if (connectionState.isConnecting) {
+        console.log("Socket already reconnecting, waiting...")
+        return socket
+      }
+
+      connectionState.isConnecting = true
       socket.connect()
       return socket
     }
@@ -135,17 +143,20 @@ export const connectSocket = (config: SocketConfig = {}): Socket => {
     connectionState.isConnecting = true
 
     const baseUrl =
-      process.env.NODE_ENV === "development" ? "http://localhost:3000" : ""
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3001"
+        : process.env.NEXT_PUBLIC_SOCKET_URL || ""
+
+    console.log(`Connecting to socket server at: ${baseUrl || "default URL"}`)
 
     // Create the socket with enhanced options
     socket = io(baseUrl, {
-      path: "/api/socketio",
       autoConnect: true,
       reconnection: finalConfig.autoReconnect,
       reconnectionAttempts: finalConfig.maxReconnectAttempts,
       reconnectionDelay: finalConfig.reconnectDelay,
       timeout: 10000,
-      query: {
+      auth: {
         name: config.name || "Anonymous",
         userId: config.userId,
         role: config.role || "STUDENT"
@@ -182,13 +193,24 @@ function setupSocketEventHandlers(socket: Socket): void {
 
   socket.on(SocketEvent.DISCONNECT, (reason) => {
     connectionState.isConnected = false
+    connectionState.isConnecting = false
     logSocketEvent(`Disconnected from socket server: ${reason}`)
   })
 
   socket.on(SocketEvent.ERROR, (error) => {
+    connectionState.isConnecting = false
     logSocketError({
       message: `Socket error: ${error}`,
       type: "operation",
+      timestamp: Date.now()
+    })
+  })
+
+  socket.on("connect_error", (error) => {
+    connectionState.isConnecting = false
+    logSocketError({
+      message: `Connection error: ${error.message}`,
+      type: "connection",
       timestamp: Date.now()
     })
   })
@@ -353,7 +375,7 @@ export const onError = (callback: (error: string) => void): void => {
  */
 export const removeAllListeners = (): void => {
   if (!socket) {
-    console.error("Cannot remove listeners: Socket not connected")
+    // Silently return instead of logging an error
     return
   }
 
@@ -491,7 +513,7 @@ export const startQuiz = (roomCode: string): void => {
   }
 
   console.log(`Starting quiz in room: ${roomCode}`)
-  socket.emit(SocketEvent.QUIZ_STARTED, { roomCode })
+  socket.emit(SocketEvent.QUIZ_STARTED, roomCode)
 }
 
 /**
@@ -504,7 +526,7 @@ export const stopQuiz = (roomCode: string): void => {
   }
 
   console.log(`Stopping quiz in room: ${roomCode}`)
-  socket.emit(SocketEvent.QUIZ_STOPPED, { roomCode })
+  socket.emit(SocketEvent.QUIZ_STOPPED, roomCode)
 }
 
 /**
@@ -517,5 +539,5 @@ export const resetRoom = (roomCode: string): void => {
   }
 
   console.log(`Resetting room: ${roomCode}`)
-  socket.emit(SocketEvent.ROOM_RESET, { roomCode })
+  socket.emit(SocketEvent.ROOM_RESET, roomCode)
 }
