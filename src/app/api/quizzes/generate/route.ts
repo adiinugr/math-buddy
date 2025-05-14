@@ -135,11 +135,11 @@ Generate ${questionCount} multiple choice questions with 4 options each. Format 
       {
         role: "system",
         content:
-          "You are a helpful assistant that creates educational quizzes and assessments in Indonesian language (Bahasa Indonesia). Always use LaTeX format with $ signs for mathematical equations. Your response must be valid JSON only, no explanations or text outside the JSON object."
+          "You are a helpful assistant that creates educational quizzes and assessments in Indonesian language (Bahasa Indonesia). When writing mathematical expressions in LaTeX format, always properly escape backslashes for JSON compatibility. For example, write '\\\\pi' instead of '\\pi' when inside a JSON string. Your response must be valid JSON only, with no explanations or text outside the JSON object."
       },
       {
         role: "user",
-        content: `${prompt}\n\nIMPORTANT: Your response MUST be a valid JSON object only. Do not include any explanations, markdown formatting, or text outside the JSON object.`
+        content: `${prompt}\n\nIMPORTANT: Your response MUST be a valid JSON object only. Do not include any explanations, markdown formatting, or text outside the JSON object. Ensure all LaTeX expressions have properly escaped backslashes for JSON (double all backslashes).\n\nExample of correctly escaped LaTeX in JSON: "text": "The formula is $x^2 + \\\\sqrt{y}$"`
       }
     ],
     model: "gpt-3.5-turbo",
@@ -319,11 +319,11 @@ Format the response as JSON with the following structure:
       {
         role: "system",
         content:
-          "You are a mathematics education expert that creates high-quality educational assessments in Indonesian language (Bahasa Indonesia). You deeply understand various mathematical topics and can create appropriate questions for each category and subcategory. Always use LaTeX format with $ signs for mathematical equations. Your response must be valid JSON only, no explanations or text outside the JSON object."
+          "You are a mathematics education expert that creates high-quality educational assessments in Indonesian language (Bahasa Indonesia). You deeply understand various mathematical topics and can create appropriate questions for each category and subcategory. When writing mathematical expressions in LaTeX format, always properly escape backslashes for JSON compatibility. For example, write '\\\\pi' instead of '\\pi' when inside a JSON string. Your response must be valid JSON only, with no explanations or text outside the JSON object."
       },
       {
         role: "user",
-        content: `${prompt}\n\nIMPORTANT: Your response MUST be a valid JSON object only. Do not include any explanations, markdown formatting, or text outside the JSON object.`
+        content: `${prompt}\n\nIMPORTANT: Your response MUST be a valid JSON object only. Do not include any explanations, markdown formatting, or text outside the JSON object. Ensure all LaTeX expressions have properly escaped backslashes for JSON (double all backslashes).\n\nExample of correctly escaped LaTeX in JSON: "text": "The formula is $x^2 + \\\\sqrt{y}$"`
       }
     ],
     model: "gpt-3.5-turbo-16k",
@@ -449,36 +449,82 @@ function safeJSONParse(jsonString: string) {
     // More aggressive cleanup for common LaTeX issues
     let fixedJson = jsonString
 
-    // Replace escaped backslashes in LaTeX that break JSON
-    fixedJson = fixedJson.replace(/\\{2,}/g, "\\\\")
+    // Step 1: Properly escape all backslashes
+    fixedJson = fixedJson.replace(/\\/g, "\\\\")
 
-    // Handle unescaped quotes within LaTeX expressions
-    let inLatex = false
+    // Step 2: But fix double-escaped backslashes (which might happen if some were already properly escaped)
+    fixedJson = fixedJson.replace(/\\\\\\\\/g, "\\\\")
+
+    // Step 3: Fix escaped quotes
+    fixedJson = fixedJson.replace(/\\"/g, '"')
+
+    // Step 4: Now properly escape unescaped quotes that are not part of the JSON structure
+    let inString = false
     let result = ""
-    for (let i = 0; i < fixedJson.length; i++) {
-      const char = fixedJson[i]
-      const nextChar = fixedJson[i + 1]
+    let i = 0
 
-      if (char === "$" && nextChar === "$") {
-        inLatex = !inLatex
-        result += "$$"
-        i++ // Skip the next $ since we've already added it
-      } else if (char === "$") {
-        inLatex = !inLatex
-        result += "$"
-      } else if (char === '"' && inLatex) {
-        // Escape quotes inside LaTeX
-        result += '\\"'
+    while (i < fixedJson.length) {
+      const char = fixedJson[i]
+
+      if (char === '"' && (i === 0 || fixedJson[i - 1] !== "\\")) {
+        // This is a non-escaped quote - it toggles whether we're in a string or not
+        inString = !inString
+        result += char
+      } else if (char === '"' && fixedJson[i - 1] === "\\") {
+        // This is an escaped quote - add it without changing the inString status
+        result += char
+      } else if (inString && char === "$") {
+        // We're in a LaTeX expression inside a string
+        // Make sure backslashes inside LaTeX are properly escaped
+        result += char
       } else {
         result += char
       }
+
+      i++
     }
 
-    // Try parsing again
+    // Step 5: Ensure the JSON has proper structure
     try {
       return JSON.parse(result)
     } catch (innerError) {
-      console.error("Failed to parse JSON even after fixes:", innerError)
+      console.error(
+        "Failed to parse JSON even after fixes, trying more aggressive fixes:",
+        innerError
+      )
+
+      // Step 6: Even more aggressive approach - extract the JSON structure manually
+      let extractedJson = ""
+      try {
+        // Find the beginning of the JSON object
+        const startIdx = jsonString.indexOf("{")
+        // Find the matching closing brace
+        let depth = 0
+        let endIdx = -1
+
+        for (let i = startIdx; i < jsonString.length; i++) {
+          if (jsonString[i] === "{") depth++
+          else if (jsonString[i] === "}") {
+            depth--
+            if (depth === 0) {
+              endIdx = i + 1
+              break
+            }
+          }
+        }
+
+        if (startIdx >= 0 && endIdx > startIdx) {
+          extractedJson = jsonString.substring(startIdx, endIdx)
+          return JSON.parse(extractedJson)
+        }
+      } catch {
+        console.error(
+          "All JSON parsing attempts failed, raw content:",
+          jsonString
+        )
+        throw new Error("Unable to parse response as valid JSON")
+      }
+
       throw innerError
     }
   }
