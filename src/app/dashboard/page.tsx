@@ -421,7 +421,7 @@ export default function DashboardPage() {
                               {category.average}%
                             </div>
                           </div>
-                          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="w-full h-3 bg-purple-200 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${
                                 category.trend === "improving"

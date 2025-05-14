@@ -34,10 +34,10 @@ export async function POST(req: Request) {
     }
 
     const subcategories = {
-      algebra: ["equations", "inequalities", "polynomials", "functions"],
-      geometry: ["shapes", "angles", "area", "volume"],
-      arithmetic: ["operations", "fractions", "decimals", "percentages"],
-      calculus: ["derivatives", "integrals", "limits", "applications"]
+      aljabar: ["persamaan", "pertidaksamaan", "polinomial", "fungsi"],
+      geometri: ["bentuk", "sudut", "luas", "volume"],
+      aritmatika: ["operasi", "pecahan", "desimal", "persentase"],
+      kalkulus: ["turunan", "integral", "limit", "aplikasi"]
     }
 
     const prompt = `Generate ${count} multiple choice math questions about ${category} with difficulty level ${difficulty}. 

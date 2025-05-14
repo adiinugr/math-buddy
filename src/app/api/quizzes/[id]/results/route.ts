@@ -17,42 +17,12 @@ interface Question {
 
 // Category mapping for consistent categorization
 const CATEGORY_MAPPINGS: Record<string, string[]> = {
-  algebra: [
-    "equations",
-    "inequalities",
-    "polynomials",
-    "functions",
-    "expressions"
-  ],
-  geometry: ["shapes", "angles", "area", "volume", "triangles", "circles"],
-  arithmetic: [
-    "operations",
-    "fractions",
-    "decimals",
-    "percentages",
-    "integers"
-  ],
-  calculus: [
-    "derivatives",
-    "integrals",
-    "limits",
-    "applications",
-    "differentiation"
-  ],
-  trigonometry: [
-    "functions",
-    "identities",
-    "equations",
-    "applications",
-    "angles"
-  ],
-  statistics: [
-    "probability",
-    "data",
-    "distributions",
-    "inference",
-    "regression"
-  ]
+  aljabar: ["persamaan", "pertidaksamaan", "polinomial", "fungsi", "ekspresi"],
+  geometri: ["bentuk", "sudut", "luas", "volume", "segitiga", "lingkaran"],
+  aritmatika: ["operasi", "pecahan", "desimal", "persentase", "bilangan bulat"],
+  kalkulus: ["turunan", "integral", "limit", "aplikasi", "diferensiasi"],
+  trigonometri: ["fungsi", "identitas", "persamaan", "aplikasi", "sudut"],
+  statistik: ["probabilitas", "data", "distribusi", "inferensi", "regresi"]
 }
 
 // Determine category from subcategory using consistent mapping

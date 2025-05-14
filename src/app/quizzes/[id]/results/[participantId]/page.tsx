@@ -145,7 +145,7 @@ function StudentStyleLearningPath({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-indigo-600" />
-          Learning Path Recommendations
+          Rekomendasi Jalur Pembelajaran
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -166,7 +166,7 @@ function StudentStyleLearningPath({
                         ? `${topic.category}: ${topic.subcategory}`
                         : topic.category}
                       <span className="text-sm px-2 py-1 bg-white rounded-full">
-                        {topic.percentage}% mastery
+                        {topic.percentage}% penguasaan
                       </span>
                     </h3>
                   </div>
@@ -197,8 +197,8 @@ function StudentStyleLearningPath({
           <div className="text-center py-8 px-4">
             <p className="text-gray-500 mb-2">
               {calculatePercentage(result.score, result.totalQuestions) === 100
-                ? "Great job! You've mastered all the content in this assessment."
-                : "No specific recommendations available."}
+                ? "Kerja bagus! Anda telah menguasai semua konten dalam penilaian ini."
+                : "Tidak ada rekomendasi khusus yang tersedia."}
             </p>
           </div>
         )}
@@ -431,7 +431,7 @@ export default function QuizResultDetailPage() {
       <div className="container max-w-4xl mx-auto">
         <div className="w-full flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-gray-800 font-heading">
-            {quiz.title} - Detailed Analysis
+            {quiz.title} - Analisis Detail
           </h1>
           <Button asChild variant="outline">
             <Link
@@ -439,7 +439,7 @@ export default function QuizResultDetailPage() {
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Results List
+              Kembali ke Daftar Hasil
             </Link>
           </Button>
         </div>
@@ -449,7 +449,7 @@ export default function QuizResultDetailPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5 text-indigo-600" />
-              Assessment Details
+              Detail Penilaian
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -457,14 +457,14 @@ export default function QuizResultDetailPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium text-gray-600">Student:</span>
+                  <span className="font-medium text-gray-600">Siswa:</span>
                   <span className="text-gray-800">
-                    {result.name || "Anonymous Student"}
+                    {result.name || "Siswa Anonim"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium text-gray-600">Date:</span>
+                  <span className="font-medium text-gray-600">Tanggal:</span>
                   <span className="text-gray-800">
                     {new Date(result.createdAt).toLocaleDateString()}
                   </span>
@@ -475,7 +475,7 @@ export default function QuizResultDetailPage() {
                 <div className="flex justify-between">
                   <div className="flex items-center gap-2">
                     <BookText className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium text-gray-600">Score:</span>
+                    <span className="font-medium text-gray-600">Skor:</span>
                   </div>
                   <span className="text-gray-800 font-semibold">
                     {result.score}/{result.totalQuestions}
@@ -485,7 +485,7 @@ export default function QuizResultDetailPage() {
                 <div>
                   <div className="flex justify-between">
                     <span className="font-medium text-gray-600">
-                      Percentage:
+                      Persentase:
                     </span>
                     <span className="text-gray-800 font-semibold">
                       {Math.round((result.score / result.totalQuestions) * 100)}
@@ -510,13 +510,13 @@ export default function QuizResultDetailPage() {
             <div className="flex gap-2 items-center mb-3">
               <Award className="h-5 w-5 text-green-600" />
               <h3 className="text-lg font-medium text-green-800">
-                Strongest Areas
+                Area Terkuat
               </h3>
             </div>
 
             {strongestCategory && (
               <div className="mb-3">
-                <p className="text-sm text-green-700 font-medium">Category</p>
+                <p className="text-sm text-green-700 font-medium">Kategori</p>
                 <div className="flex justify-between items-center">
                   <p className="text-base text-green-800 capitalize">
                     {strongestCategory.category}
@@ -531,7 +531,7 @@ export default function QuizResultDetailPage() {
             {strongestSubcategory && (
               <div>
                 <p className="text-sm text-green-700 font-medium">
-                  Subcategory
+                  Subkategori
                 </p>
                 <div className="flex justify-between items-center">
                   <p className="text-base text-green-800 capitalize">
@@ -549,14 +549,14 @@ export default function QuizResultDetailPage() {
             <div className="flex gap-2 items-center mb-3">
               <AlertTriangle className="h-5 w-5 text-amber-600" />
               <h3 className="text-lg font-medium text-amber-800">
-                Areas for Improvement
+                Area untuk Peningkatan
               </h3>
             </div>
 
             {weakestCategory ? (
               <>
                 <div className="mb-3">
-                  <p className="text-sm text-amber-700 font-medium">Category</p>
+                  <p className="text-sm text-amber-700 font-medium">Kategori</p>
                   <div className="flex justify-between items-center">
                     <p className="text-base text-amber-800 capitalize">
                       {weakestCategory.category}
@@ -570,7 +570,7 @@ export default function QuizResultDetailPage() {
                 {weakestSubcategory && (
                   <div>
                     <p className="text-sm text-amber-700 font-medium">
-                      Subcategory
+                      Subkategori
                     </p>
                     <div className="flex justify-between items-center">
                       <p className="text-base text-amber-800 capitalize">
@@ -586,7 +586,7 @@ export default function QuizResultDetailPage() {
             ) : (
               <div className="text-center py-4">
                 <p className="text-amber-700">
-                  Congratulations! You scored 100% in all areas.
+                  Selamat! Anda mendapat skor 100% di semua area.
                 </p>
               </div>
             )}
@@ -605,7 +605,7 @@ export default function QuizResultDetailPage() {
         {/* Question Review */}
         <Card className="bg-white/90 border-white/20 shadow-sm">
           <CardHeader>
-            <CardTitle>Question Review</CardTitle>
+            <CardTitle>Ulasan Soal</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -622,11 +622,9 @@ export default function QuizResultDetailPage() {
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="font-medium">Question {index + 1}</h3>
+                        <h3 className="font-medium">Soal {index + 1}</h3>
                         <p className="text-sm text-muted-foreground capitalize">
-                          {question.subcategory ||
-                            question.category ||
-                            "general"}
+                          {question.subcategory || question.category || "umum"}
                         </p>
                       </div>
                       <span
@@ -636,7 +634,7 @@ export default function QuizResultDetailPage() {
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {isCorrect ? "Correct" : "Incorrect"}
+                        {isCorrect ? "Benar" : "Salah"}
                       </span>
                     </div>
 

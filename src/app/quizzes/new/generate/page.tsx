@@ -19,59 +19,59 @@ import useTranslation from "@/hooks/useTranslation"
 
 const MATH_CATEGORIES = [
   {
-    id: "algebra",
+    id: "aljabar",
     name: "Aljabar",
     subcategories: [
-      { id: "linear", name: "Persamaan Linear" },
-      { id: "quadratic", name: "Persamaan Kuadrat" },
-      { id: "polynomials", name: "Polinomial" },
-      { id: "functions", name: "Fungsi" },
-      { id: "equations", name: "Persamaan" },
-      { id: "inequalities", name: "Pertidaksamaan" }
+      { id: "persamaan_linear", name: "Persamaan Linear" },
+      { id: "persamaan_kuadrat", name: "Persamaan Kuadrat" },
+      { id: "polinomial", name: "Polinomial" },
+      { id: "fungsi", name: "Fungsi" },
+      { id: "persamaan", name: "Persamaan" },
+      { id: "pertidaksamaan", name: "Pertidaksamaan" }
     ]
   },
   {
-    id: "geometry",
+    id: "geometri",
     name: "Geometri",
     subcategories: [
-      { id: "triangles", name: "Segitiga" },
-      { id: "circles", name: "Lingkaran" },
-      { id: "polygons", name: "Poligon" },
-      { id: "coordinate", name: "Geometri Koordinat" },
-      { id: "transformations", name: "Transformasi" },
-      { id: "area", name: "Luas dan Volume" }
+      { id: "segitiga", name: "Segitiga" },
+      { id: "lingkaran", name: "Lingkaran" },
+      { id: "poligon", name: "Poligon" },
+      { id: "koordinat", name: "Geometri Koordinat" },
+      { id: "transformasi", name: "Transformasi" },
+      { id: "luas", name: "Luas dan Volume" }
     ]
   },
   {
-    id: "calculus",
+    id: "kalkulus",
     name: "Kalkulus",
     subcategories: [
-      { id: "limits", name: "Limit" },
-      { id: "derivatives", name: "Turunan" },
-      { id: "integrals", name: "Integral" },
-      { id: "series", name: "Deret" },
-      { id: "applications", name: "Aplikasi" }
+      { id: "limit", name: "Limit" },
+      { id: "turunan", name: "Turunan" },
+      { id: "integral", name: "Integral" },
+      { id: "deret", name: "Deret" },
+      { id: "aplikasi", name: "Aplikasi" }
     ]
   },
   {
-    id: "statistics",
+    id: "statistik",
     name: "Statistika",
     subcategories: [
-      { id: "probability", name: "Probabilitas" },
-      { id: "distributions", name: "Distribusi" },
-      { id: "hypothesis", name: "Pengujian Hipotesis" },
-      { id: "regression", name: "Regresi" },
-      { id: "data-analysis", name: "Analisis Data" }
+      { id: "probabilitas", name: "Probabilitas" },
+      { id: "distribusi", name: "Distribusi" },
+      { id: "hipotesis", name: "Pengujian Hipotesis" },
+      { id: "regresi", name: "Regresi" },
+      { id: "analisis_data", name: "Analisis Data" }
     ]
   },
   {
-    id: "trigonometry",
+    id: "trigonometri",
     name: "Trigonometri",
     subcategories: [
-      { id: "functions", name: "Fungsi Trigonometri" },
-      { id: "identities", name: "Identitas" },
-      { id: "equations", name: "Persamaan Trigonometri" },
-      { id: "applications", name: "Aplikasi" }
+      { id: "fungsi_trigonometri", name: "Fungsi Trigonometri" },
+      { id: "identitas", name: "Identitas" },
+      { id: "persamaan_trigonometri", name: "Persamaan Trigonometri" },
+      { id: "aplikasi", name: "Aplikasi" }
     ]
   }
 ]

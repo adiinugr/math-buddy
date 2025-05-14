@@ -88,10 +88,10 @@ export async function GET(
             >
           }
         > = {
-          algebra: { correct: 0, total: 0, subcategories: {} },
-          geometry: { correct: 0, total: 0, subcategories: {} },
-          arithmetic: { correct: 0, total: 0, subcategories: {} },
-          calculus: { correct: 0, total: 0, subcategories: {} }
+          aljabar: { correct: 0, total: 0, subcategories: {} },
+          geometri: { correct: 0, total: 0, subcategories: {} },
+          aritmatika: { correct: 0, total: 0, subcategories: {} },
+          kalkulus: { correct: 0, total: 0, subcategories: {} }
         }
 
         // Process each question and update category statistics

@@ -93,19 +93,19 @@ export function AIInsightsCard({
     )
     if (scorePercentage >= 90) {
       insights.push(
-        "Excellent overall performance! Your strong grasp of mathematics is evident."
+        "Performa keseluruhan sangat baik! Pemahaman matematika Anda sangat kuat."
       )
     } else if (scorePercentage >= 70) {
       insights.push(
-        "Good overall performance. With some targeted practice, you can further improve your score."
+        "Performa keseluruhan baik. Dengan latihan yang terarah, Anda dapat lebih meningkatkan skor Anda."
       )
     } else if (scorePercentage >= 50) {
       insights.push(
-        "You have a basic understanding of the material, but there's room for improvement."
+        "Anda memiliki pemahaman dasar tentang materi, tetapi masih ada ruang untuk perbaikan."
       )
     } else {
       insights.push(
-        "You might benefit from reviewing core mathematical concepts and seeking additional help."
+        "Anda mungkin perlu meninjau kembali konsep matematika dasar dan mencari bantuan tambahan."
       )
     }
 
@@ -124,9 +124,9 @@ export function AIInsightsCard({
     const strongest = categories[categories.length - 1]
     if (strongest && strongest.total > 0) {
       insights.push(
-        `Your strongest area is ${
+        `Area terkuat Anda adalah ${
           strongest.name.charAt(0).toUpperCase() + strongest.name.slice(1)
-        } (${strongest.percentage}% correct).`
+        } (${strongest.percentage}% benar).`
       )
     }
 
@@ -134,7 +134,7 @@ export function AIInsightsCard({
     const weakest = categories[0]
     if (weakest && weakest.total > 0 && weakest.percentage < 70) {
       insights.push(
-        `Focus on improving your ${weakest.name} skills, where you scored ${weakest.percentage}%.`
+        `Fokus untuk meningkatkan keterampilan ${weakest.name} Anda, di mana Anda mendapat skor ${weakest.percentage}%.`
       )
     }
 
@@ -161,7 +161,7 @@ export function AIInsightsCard({
 
       if (mostMistakesCategory && mostMistakesCategory[1] > 1) {
         insights.push(
-          `You made multiple mistakes in ${mostMistakesCategory[0]}. Consider reviewing this topic.`
+          `Anda membuat beberapa kesalahan di ${mostMistakesCategory[0]}. Pertimbangkan untuk meninjau topik ini.`
         )
       }
     }
@@ -172,29 +172,29 @@ export function AIInsightsCard({
 
     if (consistentCategories.length > inconsistentCategories.length) {
       insights.push(
-        "You show consistent understanding across multiple topics, suggesting a strong mathematical foundation."
+        "Anda menunjukkan pemahaman yang konsisten di berbagai topik, menunjukkan dasar matematika yang kuat."
       )
     } else if (inconsistentCategories.length > 1) {
       insights.push(
-        "Your performance varies across topics. A more structured study approach might help with consistency."
+        "Performa Anda bervariasi di seluruh topik. Pendekatan belajar yang lebih terstruktur mungkin membantu meningkatkan konsistensi."
       )
     }
 
     // Time management insight (placeholder - would use actual timing data in a real implementation)
     if (result.totalQuestions > 10 && scorePercentage < 65) {
       insights.push(
-        "Consider spending more time on practice questions to improve your speed and accuracy."
+        "Pertimbangkan untuk menghabiskan lebih banyak waktu pada latihan soal untuk meningkatkan kecepatan dan akurasi Anda."
       )
     }
 
     // Add a study recommendation
     if (weakest && weakest.percentage < 70) {
       insights.push(
-        `Recommendation: Start with ${weakest.name} exercises and gradually move to more complex problems.`
+        `Rekomendasi: Mulai dengan latihan ${weakest.name} dan secara bertahap pindah ke masalah yang lebih kompleks.`
       )
     } else {
       insights.push(
-        "Recommendation: Challenge yourself with more advanced problems to further develop your skills."
+        "Rekomendasi: Tantang diri Anda dengan masalah yang lebih canggih untuk lebih mengembangkan keterampilan Anda."
       )
     }
 
@@ -363,7 +363,7 @@ export function AIInsightsCard({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl text-indigo-900 flex items-center gap-2">
           <Brain className="h-5 w-5 text-indigo-600" />
-          AI-Powered Insights
+          Wawasan berbasis AI
         </CardTitle>
         {loading && (
           <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
@@ -372,7 +372,7 @@ export function AIInsightsCard({
       <CardContent>
         {loading ? (
           <div className="flex justify-center items-center h-24">
-            <p className="text-indigo-700">Analyzing your results...</p>
+            <p className="text-indigo-700">Menganalisis hasil Anda...</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -392,18 +392,19 @@ export function AIInsightsCard({
                     }
                   >
                     <Book className="h-4 w-4 mr-2" />
-                    Get Detailed Study Plan
+                    Dapatkan Rencana Belajar Detail
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle className="text-xl flex items-center gap-2">
                       <Book className="h-5 w-5 text-indigo-600" />
-                      Personalized Study Plan
+                      Rencana Belajar Personal
                     </DialogTitle>
                     <DialogDescription>
-                      Based on your assessment results, we&apos;ve created a
-                      personalized study plan to help you improve.
+                      Berdasarkan hasil penilaian Anda, kami telah membuat
+                      rencana belajar personal untuk membantu Anda meningkatkan
+                      kemampuan.
                     </DialogDescription>
                   </DialogHeader>
 
@@ -411,23 +412,24 @@ export function AIInsightsCard({
                     <div className="flex flex-col items-center justify-center py-8">
                       <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-4" />
                       <p className="text-gray-700">
-                        Generating your personalized study plan...
+                        Membuat rencana belajar personal Anda...
                       </p>
                       <p className="text-sm text-gray-500 mt-2">
-                        This may take a moment as we analyze your performance
-                        patterns.
+                        Ini mungkin memerlukan waktu saat kami menganalisis pola
+                        performa Anda.
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-6 py-4">
                       <div className="bg-indigo-50 p-4 rounded-lg">
                         <h3 className="font-medium text-indigo-900 mb-2">
-                          Study Plan Overview
+                          Ikhtisar Rencana Belajar
                         </h3>
                         <p className="text-gray-700">
-                          This plan focuses on improving your weaker areas while
-                          maintaining your strengths. We recommend studying 5-7
-                          hours per week total.
+                          Rencana ini berfokus pada peningkatan area yang lebih
+                          lemah sambil mempertahankan kekuatan Anda. Kami
+                          merekomendasikan belajar 5-7 jam per minggu secara
+                          total.
                         </p>
                       </div>
 
@@ -446,20 +448,27 @@ export function AIInsightsCard({
                                   : "bg-green-100 text-green-800"
                               }`}
                             >
-                              {item.priority} priority
+                              {item.priority === "high"
+                                ? "Prioritas tinggi"
+                                : item.priority === "medium"
+                                ? "Prioritas sedang"
+                                : "Prioritas rendah"}
                             </span>
                           </div>
 
                           <p className="text-sm text-gray-600 mb-3">
                             <span className="font-medium">
-                              Recommended time:
+                              Waktu yang direkomendasikan:
                             </span>{" "}
-                            {item.timeEstimate}
+                            {item.timeEstimate.replace(
+                              "hours per week",
+                              "jam per minggu"
+                            )}
                           </p>
 
                           <div className="space-y-2">
                             <p className="text-sm font-medium text-gray-700">
-                              Recommended resources:
+                              Sumber daya yang direkomendasikan:
                             </p>
                             {item.resources.map((resource, j) => (
                               <div key={j} className="flex items-center gap-2">
@@ -480,12 +489,12 @@ export function AIInsightsCard({
 
                       <div className="bg-indigo-50 p-4 rounded-lg mt-4">
                         <h3 className="font-medium text-indigo-900 mb-2">
-                          Next Steps
+                          Langkah Selanjutnya
                         </h3>
                         <p className="text-gray-700">
-                          After following this plan for 2-3 weeks, retake the
-                          assessment to measure your progress and get an updated
-                          study plan.
+                          Setelah mengikuti rencana ini selama 2-3 minggu, ambil
+                          kembali penilaian untuk mengukur kemajuan Anda dan
+                          dapatkan rencana belajar yang diperbarui.
                         </p>
                       </div>
                     </div>
