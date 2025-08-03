@@ -4,7 +4,7 @@ import "./globals.css"
 import dynamic from "next/dynamic"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
-import GoogleAnalytics from "@/components/GoogleAnalytics"
+import GoogleAnalyticsWrapper from "@/components/GoogleAnalyticsWrapper"
 
 // Optimize font loading
 const montserrat = Montserrat({
@@ -78,7 +78,7 @@ export default function RootLayout({
           <LayoutContent>{children}</LayoutContent>
         </Suspense>
         <Toaster position="top-right" richColors closeButton />
-        <GoogleAnalytics />
+        <GoogleAnalyticsWrapper />
       </body>
     </html>
   )
