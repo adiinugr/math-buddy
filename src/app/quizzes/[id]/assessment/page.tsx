@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Copy, FileText, BookOpen, Check, Edit } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
+import { trackEvent } from "@/components/GoogleAnalytics"
 
 interface Quiz {
   id: string
@@ -78,6 +79,7 @@ export default function AssessmentPage() {
     navigator.clipboard.writeText(assessmentUrl)
     setCopied(true)
     toast.success("Assessment link copied to clipboard!")
+    trackEvent("copy_assessment_link", "quiz", quizId)
     setTimeout(() => setCopied(false), 2000)
   }
 
@@ -85,6 +87,7 @@ export default function AssessmentPage() {
     if (quiz) {
       navigator.clipboard.writeText(quiz.code)
       toast.success("Assessment code copied to clipboard!")
+      trackEvent("copy_quiz_code", "quiz", quizId)
     }
   }
 

@@ -40,7 +40,7 @@ export default function ManualQuizPage() {
           localStorage.removeItem("generatedQuiz")
         } catch (error) {
           console.error("Error parsing generated quiz:", error)
-          toast.error("Failed to load generated quiz")
+          toast.error("Gagal memuat kuis yang dihasilkan")
         }
       }
     }
@@ -78,17 +78,17 @@ export default function ManualQuizPage() {
     if (isSubmitting) return // Prevent duplicate submissions
 
     if (!title.trim()) {
-      toast.error("Please enter a title")
+      toast.error("Silakan masukkan judul")
       return
     }
 
     if (questions.some((q) => !q.text.trim())) {
-      toast.error("Please fill in all questions")
+      toast.error("Silakan isi semua pertanyaan")
       return
     }
 
     if (questions.some((q) => q.options.some((o) => !o.trim()))) {
-      toast.error("Please fill in all options")
+      toast.error("Silakan isi semua pilihan jawaban")
       return
     }
 
@@ -111,11 +111,11 @@ export default function ManualQuizPage() {
         throw new Error("Failed to save quiz")
       }
 
-      toast.success("Quiz saved successfully")
+      toast.success("Kuis berhasil disimpan")
       router.push("/quizzes")
     } catch (error) {
       console.error("Error saving quiz:", error)
-      toast.error("Failed to save quiz. Please try again.")
+      toast.error("Gagal menyimpan kuis. Silakan coba lagi.")
       setIsSubmitting(false) // Only reset on error, as we're redirecting on success
     }
   }
@@ -126,7 +126,8 @@ export default function ManualQuizPage() {
         <div className="w-full backdrop-blur-lg bg-white/30 p-6 rounded-xl border border-white/20 shadow-lg">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-3xl font-bold text-gray-800 font-heading">
-              Create {quizType === "live" ? "Live Quiz" : "Assessment"} Manually
+              Buat {quizType === "live" ? "Kuis Langsung" : "Penilaian"} Secara
+              Manual
             </h2>
             <Button
               onClick={handleSubmit}
@@ -155,12 +156,14 @@ export default function ManualQuizPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Saving...
+                  Menyimpan...
                 </span>
               ) : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  {quizType === "live" ? "Save Live Quiz" : "Save Assessment"}
+                  {quizType === "live"
+                    ? "Simpan Kuis Langsung"
+                    : "Simpan Penilaian"}
                 </>
               )}
             </Button>
@@ -169,24 +172,24 @@ export default function ManualQuizPage() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title
+                Judul
               </label>
               <LatexEditor
                 value={title}
                 onChange={setTitle}
-                placeholder="Enter quiz title (e.g., Algebra Quiz: $ax^2 + bx + c = 0$)"
+                placeholder="Masukkan judul kuis (contoh: Kuis Aljabar: $ax^2 + bx + c = 0$)"
                 className="border border-gray-400 rounded-md"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
+                Deskripsi
               </label>
               <LatexEditor
                 value={description}
                 onChange={setDescription}
-                placeholder="Enter quiz description (e.g., Test your knowledge of quadratic equations $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$)"
+                placeholder="Masukkan deskripsi kuis (contoh: Uji pengetahuan Anda tentang persamaan kuadrat $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$)"
                 className="border border-gray-400 rounded-md"
               />
             </div>
@@ -199,9 +202,7 @@ export default function ManualQuizPage() {
                 >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-medium">
-                        Question {index + 1}
-                      </h3>
+                      <h3 className="text-lg font-medium">Soal {index + 1}</h3>
                       {questions.length > 1 && (
                         <Button
                           variant="ghost"
@@ -217,21 +218,21 @@ export default function ManualQuizPage() {
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Question Text
+                          Teks Soal
                         </label>
                         <LatexEditor
                           value={question.text}
                           onChange={(value) =>
                             updateQuestion(question.id, "text", value)
                           }
-                          placeholder="Enter question text with LaTeX equations (e.g., Solve for x: $2x^2 + 5x - 3 = 0$)"
+                          placeholder="Masukkan teks soal dengan persamaan LaTeX (contoh: Selesaikan untuk x: $2x^2 + 5x - 3 = 0$)"
                           className="border border-gray-400 rounded-md"
                         />
                       </div>
 
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Options
+                          Pilihan Jawaban
                         </label>
                         {question.options.map((option, optionIndex) => (
                           <div
@@ -262,9 +263,9 @@ export default function ManualQuizPage() {
                                   newOptions
                                 )
                               }}
-                              placeholder={`Option ${
+                              placeholder={`Pilihan ${
                                 optionIndex + 1
-                              } (e.g., $x = 1$ or $x = -3$)`}
+                              } (contoh: $x = 1$ atau $x = -3$)`}
                               className="border border-gray-400 rounded-md"
                             />
                           </div>
@@ -281,7 +282,7 @@ export default function ManualQuizPage() {
                 className="w-full bg-white/50 border-gray-200/50 hover:bg-white/70"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Add Question
+                Tambah Soal
               </Button>
             </div>
           </div>

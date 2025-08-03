@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
+import { trackUserAction } from "@/components/GoogleAnalytics"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -36,6 +37,7 @@ export default function LoginPage() {
       if (result?.error) {
         // Handle error
       } else {
+        trackUserAction("login")
         router.push("/select-role")
       }
     } catch (error) {
