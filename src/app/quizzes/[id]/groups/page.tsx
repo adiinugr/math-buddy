@@ -114,7 +114,7 @@ export default function StudentGroupsPage() {
         }
       }
     } catch (error) {
-      toast.error("Failed to generate student groups")
+      toast.error("Gagal menghasilkan grup siswa")
       setError("Failed to generate student groups")
       console.error("Error generating groups:", error)
     } finally {
@@ -325,10 +325,10 @@ export default function StudentGroupsPage() {
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center gap-2">
                       <Users className="h-5 w-5 text-blue-500" />
-                      Group {groupIndex + 1}
+                      Grup {groupIndex + 1}
                     </span>
                     <span className="text-sm font-normal text-gray-500">
-                      {group.length} students
+                      {group.length} siswa
                     </span>
                   </CardTitle>
                 </CardHeader>
@@ -371,8 +371,8 @@ export default function StudentGroupsPage() {
                               </h3>
                               <div className="flex items-center gap-2">
                                 <span className="text-xs text-gray-500">
-                                  Score: {student.score}/
-                                  {student.totalQuestions} ({scorePercentage}%)
+                                  Skor: {student.score}/{student.totalQuestions}{" "}
+                                  ({scorePercentage}%)
                                 </span>
                                 {category !== "overall" && (
                                   <span className="text-xs text-blue-600">
@@ -394,11 +394,11 @@ export default function StudentGroupsPage() {
               <div className="flex flex-col items-center justify-center gap-4">
                 <AlertTriangle className="h-12 w-12 text-amber-500" />
                 <h3 className="text-lg font-medium text-gray-700">
-                  Error Generating Groups
+                  Kesalahan Menghasilkan Grup
                 </h3>
                 <p className="text-gray-500 max-w-md">
-                  {error}. Make sure there are students that have completed this
-                  assessment.
+                  {error}. Pastikan ada siswa yang telah menyelesaikan penilaian
+                  ini.
                 </p>
               </div>
             </div>
@@ -407,11 +407,11 @@ export default function StudentGroupsPage() {
               <div className="flex flex-col items-center justify-center gap-4">
                 <UserPlus className="h-12 w-12 text-gray-400" />
                 <h3 className="text-lg font-medium text-gray-700">
-                  No Groups Generated
+                  Belum Ada Grup yang Dihasilkan
                 </h3>
                 <p className="text-gray-500 max-w-md">
-                  Configure the grouping options and click the Generate Groups
-                  button to create student groups based on assessment results.
+                  Konfigurasi opsi pengelompokan dan klik tombol Hasilkan Grup
+                  untuk membuat grup siswa berdasarkan hasil penilaian.
                 </p>
               </div>
             </div>

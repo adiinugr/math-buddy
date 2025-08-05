@@ -100,7 +100,7 @@ export default function JoinPage() {
 
       if (!verifyResponse.ok) {
         const errorData = await verifyResponse.json()
-        throw new Error(errorData.error || "Invalid assessment code")
+        throw new Error(errorData.error || "Kode penilaian tidak valid")
       }
 
       console.log("Assessment verified, joining with code:", assessmentCode)
@@ -116,7 +116,7 @@ export default function JoinPage() {
 
       if (!joinResponse.ok) {
         const errorData = await joinResponse.json()
-        throw new Error(errorData.error || "Failed to join assessment")
+        throw new Error(errorData.error || "Gagal bergabung dengan penilaian")
       }
 
       const joinData = await joinResponse.json()
@@ -129,7 +129,7 @@ export default function JoinPage() {
       sessionStorage.setItem("currentParticipantId", joinData.participantId)
       console.log("Stored participantId in sessionStorage, redirecting")
 
-      toast.success("Successfully joined assessment!")
+      toast.success("Berhasil bergabung dengan penilaian!")
 
       // Redirect directly to the take page with participant ID
       router.push(

@@ -78,7 +78,7 @@ export default function AssessmentPage() {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(assessmentUrl)
     setCopied(true)
-    toast.success("Assessment link copied to clipboard!")
+    toast.success("Tautan penilaian berhasil disalin ke clipboard!")
     trackEvent("copy_assessment_link", "quiz", quizId)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -86,7 +86,7 @@ export default function AssessmentPage() {
   const copyCodeToClipboard = () => {
     if (quiz) {
       navigator.clipboard.writeText(quiz.code)
-      toast.success("Assessment code copied to clipboard!")
+      toast.success("Kode penilaian berhasil disalin ke clipboard!")
       trackEvent("copy_quiz_code", "quiz", quizId)
     }
   }

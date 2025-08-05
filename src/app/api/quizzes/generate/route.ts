@@ -148,7 +148,7 @@ Generate ${questionCount} multiple choice questions with 4 options each. Format 
 
   const content = completion.choices[0].message.content
   if (!content) {
-    throw new Error("No content generated")
+    throw new Error("Tidak ada konten yang dihasilkan")
   }
 
   // More robust JSON extraction
@@ -382,7 +382,7 @@ Format the response as JSON with the following structure:
 // Enhance the response validation to ensure category and subcategory are always set
 function validateQuizResponse(quizData: QuizData, topics: Topic[]): QuizData {
   if (!quizData.questions || !Array.isArray(quizData.questions)) {
-    throw new Error("Invalid quiz structure: 'questions' array is missing")
+    throw new Error("Struktur kuis tidak valid: array 'questions' hilang")
   }
 
   // Create topic maps for easy lookup
@@ -522,7 +522,7 @@ function safeJSONParse(jsonString: string) {
           "All JSON parsing attempts failed, raw content:",
           jsonString
         )
-        throw new Error("Unable to parse response as valid JSON")
+        throw new Error("Tidak dapat mengurai respons sebagai JSON yang valid")
       }
 
       throw innerError

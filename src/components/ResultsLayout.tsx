@@ -75,6 +75,25 @@ export default function ResultsLayout({
   backUrl,
   backLabel
 }: ResultsLayoutProps) {
+  // Validate result data
+  if (!result || !result.questions || !result.categories) {
+    console.error("Invalid result data:", result)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">
+            Data Hasil Tidak Valid
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Hasil penilaian tidak dapat ditampilkan karena data tidak lengkap.
+          </p>
+          <Button asChild>
+            <Link href={backUrl}>{backLabel}</Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
   // Find strongest and weakest subcategories
   const subcategoryPerformance: {
     category: string

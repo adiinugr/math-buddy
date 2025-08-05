@@ -157,7 +157,9 @@ export default function StudentResultsPage() {
       const participantId = localStorage.getItem("liveQuizParticipantId")
 
       if (!participantId) {
-        setError("No participant ID found. Please complete the quiz first.")
+        setError(
+          "ID peserta tidak ditemukan. Silakan selesaikan kuis terlebih dahulu."
+        )
         setLoading(false)
         return
       }
@@ -166,7 +168,8 @@ export default function StudentResultsPage() {
         `/api/quizzes/live-result?participantId=${participantId}`
       )
       if (!response.ok) {
-        throw new Error("Failed to fetch results")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || "Gagal mengambil hasil")
       }
 
       const data = await response.json()
@@ -184,8 +187,8 @@ export default function StudentResultsPage() {
       })
     } catch (error) {
       console.error("Error fetching results:", error)
-      setError("Failed to load quiz results")
-      toast.error("Failed to load quiz results")
+      setError("Gagal memuat hasil kuis")
+      toast.error("Gagal memuat hasil kuis")
     } finally {
       setLoading(false)
     }
@@ -227,7 +230,7 @@ export default function StudentResultsPage() {
           </div>
           <Card className="backdrop-blur-lg bg-white/30 border-white/20 shadow-lg">
             <CardHeader>
-              <CardTitle>Error</CardTitle>
+              <CardTitle>Kesalahan</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-red-500 mb-4">{error}</p>

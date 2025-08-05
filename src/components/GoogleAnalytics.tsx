@@ -8,7 +8,11 @@ const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 
 // Initialize Google Analytics
 export const initGA = () => {
+  console.log("🔍 Google Analytics Debug:", { GA_MEASUREMENT_ID })
+
   if (typeof window !== "undefined" && GA_MEASUREMENT_ID) {
+    console.log("✅ Initializing Google Analytics with ID:", GA_MEASUREMENT_ID)
+
     // Load Google Analytics script
     const script = document.createElement("script")
     script.async = true
@@ -25,12 +29,20 @@ export const initGA = () => {
       page_title: document.title,
       page_location: window.location.href
     })
+
+    console.log("✅ Google Analytics initialized successfully")
+  } else {
+    console.warn("⚠️ Google Analytics not initialized:", {
+      window: typeof window !== "undefined",
+      GA_MEASUREMENT_ID: GA_MEASUREMENT_ID
+    })
   }
 }
 
 // Track page views
 export const trackPageView = (url: string) => {
-  if (typeof window !== "undefined" && GA_MEASUREMENT_ID) {
+  if (typeof window !== "undefined" && GA_MEASUREMENT_ID && window.gtag) {
+    console.log("📊 Tracking page view:", url)
     window.gtag("config", GA_MEASUREMENT_ID, {
       page_path: url,
       page_title: document.title
@@ -45,11 +57,17 @@ export const trackEvent = (
   label?: string,
   value?: number
 ) => {
-  if (typeof window !== "undefined" && GA_MEASUREMENT_ID) {
+  if (typeof window !== "undefined" && GA_MEASUREMENT_ID && window.gtag) {
+    console.log("📊 Tracking event:", { action, category, label, value })
     window.gtag("event", action, {
       event_category: category,
       event_label: label,
       value: value
+    })
+  } else {
+    console.warn("⚠️ Cannot track event - GA not available:", {
+      action,
+      category
     })
   }
 }
@@ -61,7 +79,13 @@ export const trackQuizEvent = (
   questionId?: string,
   isCorrect?: boolean
 ) => {
-  if (typeof window !== "undefined" && GA_MEASUREMENT_ID) {
+  if (typeof window !== "undefined" && GA_MEASUREMENT_ID && window.gtag) {
+    console.log("📊 Tracking quiz event:", {
+      action,
+      quizId,
+      questionId,
+      isCorrect
+    })
     window.gtag("event", action, {
       event_category: "quiz",
       quiz_id: quizId,
@@ -76,7 +100,8 @@ export const trackUserAction = (
   action: "login" | "register" | "logout" | "role_select",
   role?: string
 ) => {
-  if (typeof window !== "undefined" && GA_MEASUREMENT_ID) {
+  if (typeof window !== "undefined" && GA_MEASUREMENT_ID && window.gtag) {
+    console.log("📊 Tracking user action:", { action, role })
     window.gtag("event", action, {
       event_category: "user",
       user_role: role
@@ -92,6 +117,7 @@ export default function GoogleAnalytics() {
   useEffect(() => {
     // Initialize GA on first load
     if (!window.gtag) {
+      console.log("🔄 Initializing Google Analytics component")
       initGA()
     }
   }, [])

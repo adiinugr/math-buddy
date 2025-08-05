@@ -25,7 +25,7 @@ interface Question {
   latex?: boolean // Flag untuk mengidentifikasi jika pertanyaan menggunakan LaTeX
   options: string[]
   optionsLatex?: boolean // Flag untuk mengidentifikasi jika opsi jawaban menggunakan LaTeX
-  correctAnswer: string
+  correctAnswer: number
   category: "algebra" | "geometry" | "arithmetic" | "calculus"
   difficulty: "easy" | "medium" | "hard"
 }
@@ -36,7 +36,7 @@ const mathQuestions: Question[] = [
     id: 1,
     text: "Solve for x: 2x + 5 = 13",
     options: ["x = 3", "x = 4", "x = 8", "x = 9"],
-    correctAnswer: "x = 4",
+    correctAnswer: 1,
     category: "algebra",
     difficulty: "easy"
   },
@@ -49,7 +49,7 @@ const mathQuestions: Question[] = [
       "4π square units",
       "12π square units"
     ],
-    correctAnswer: "16π square units",
+    correctAnswer: 1,
     category: "geometry",
     difficulty: "easy"
   },
@@ -57,7 +57,7 @@ const mathQuestions: Question[] = [
     id: 3,
     text: "Simplify: (3 × 4) + (6 ÷ 2)",
     options: ["15", "24", "18", "21"],
-    correctAnswer: "15",
+    correctAnswer: 0,
     category: "arithmetic",
     difficulty: "easy"
   },
@@ -70,7 +70,7 @@ const mathQuestions: Question[] = [
       "f'(x) = 2x",
       "f'(x) = x + 3"
     ],
-    correctAnswer: "f'(x) = 2x + 3",
+    correctAnswer: 0,
     category: "calculus",
     difficulty: "medium"
   },
@@ -78,7 +78,7 @@ const mathQuestions: Question[] = [
     id: 5,
     text: "Solve the inequality: 2x - 7 > 5",
     options: ["x > 6", "x > 5", "x < 6", "x < 5"],
-    correctAnswer: "x > 6",
+    correctAnswer: 0,
     category: "algebra",
     difficulty: "medium"
   },
@@ -86,7 +86,7 @@ const mathQuestions: Question[] = [
     id: 6,
     text: "In a right triangle, if one leg is 5 units and the hypotenuse is 13 units, what is the length of the other leg?",
     options: ["8 units", "10 units", "12 units", "11 units"],
-    correctAnswer: "12 units",
+    correctAnswer: 2,
     category: "geometry",
     difficulty: "medium"
   },
@@ -94,7 +94,7 @@ const mathQuestions: Question[] = [
     id: 7,
     text: "What is the result of \\sqrt{25} + \\sqrt{16}?",
     options: ["9", "41", "10", "11"],
-    correctAnswer: "9",
+    correctAnswer: 0,
     category: "arithmetic",
     difficulty: "easy"
   },
@@ -102,7 +102,7 @@ const mathQuestions: Question[] = [
     id: 8,
     text: "If f(x) = 2x³ - 4x, find f'(1)",
     options: ["2", "6", "8", "10"],
-    correctAnswer: "6",
+    correctAnswer: 1,
     category: "calculus",
     difficulty: "hard"
   },
@@ -111,7 +111,7 @@ const mathQuestions: Question[] = [
     text: "Factor the expression: x^2 - 9",
     options: ["(x + 3)(x - 3)", "(x + 9)(x - 9)", "(x + 3)^2", "(x - 3)^2"],
     optionsLatex: true,
-    correctAnswer: "(x + 3)(x - 3)",
+    correctAnswer: 0,
     category: "algebra",
     difficulty: "medium"
   },
@@ -124,7 +124,7 @@ const mathQuestions: Question[] = [
       "18 cubic units",
       "12 cubic units"
     ],
-    correctAnswer: "27 cubic units",
+    correctAnswer: 1,
     category: "geometry",
     difficulty: "easy"
   }
@@ -136,7 +136,7 @@ const mathQuestionsId: Question[] = [
     id: 1,
     text: "Selesaikan x: 2x + 5 = 13",
     options: ["x = 3", "x = 4", "x = 8", "x = 9"],
-    correctAnswer: "x = 4",
+    correctAnswer: 1,
     category: "algebra",
     difficulty: "easy"
   },
@@ -149,7 +149,7 @@ const mathQuestionsId: Question[] = [
       "4π satuan persegi",
       "12π satuan persegi"
     ],
-    correctAnswer: "16π satuan persegi",
+    correctAnswer: 1,
     category: "geometry",
     difficulty: "easy"
   },
@@ -157,7 +157,7 @@ const mathQuestionsId: Question[] = [
     id: 3,
     text: "Sederhanakan: (3 × 4) + (6 ÷ 2)",
     options: ["15", "24", "18", "21"],
-    correctAnswer: "15",
+    correctAnswer: 0,
     category: "arithmetic",
     difficulty: "easy"
   },
@@ -170,7 +170,7 @@ const mathQuestionsId: Question[] = [
       "f'(x) = 2x",
       "f'(x) = x + 3"
     ],
-    correctAnswer: "f'(x) = 2x + 3",
+    correctAnswer: 0,
     category: "calculus",
     difficulty: "medium"
   },
@@ -178,7 +178,7 @@ const mathQuestionsId: Question[] = [
     id: 5,
     text: "Selesaikan pertidaksamaan: 2x - 7 > 5",
     options: ["x > 6", "x > 5", "x < 6", "x < 5"],
-    correctAnswer: "x > 6",
+    correctAnswer: 0,
     category: "algebra",
     difficulty: "medium"
   },
@@ -186,7 +186,7 @@ const mathQuestionsId: Question[] = [
     id: 6,
     text: "Dalam segitiga siku-siku, jika satu sisi adalah 5 satuan dan sisi miring adalah 13 satuan, berapa panjang sisi lainnya?",
     options: ["8 satuan", "10 satuan", "12 satuan", "11 satuan"],
-    correctAnswer: "12 satuan",
+    correctAnswer: 2,
     category: "geometry",
     difficulty: "medium"
   },
@@ -194,7 +194,7 @@ const mathQuestionsId: Question[] = [
     id: 7,
     text: "Berapa hasil dari \\sqrt{25} + \\sqrt{16}?",
     options: ["9", "41", "10", "11"],
-    correctAnswer: "9",
+    correctAnswer: 0,
     category: "arithmetic",
     difficulty: "easy"
   },
@@ -202,7 +202,7 @@ const mathQuestionsId: Question[] = [
     id: 8,
     text: "Jika f(x) = 2x³ - 4x, tentukan f'(1)",
     options: ["2", "6", "8", "10"],
-    correctAnswer: "6",
+    correctAnswer: 1,
     category: "calculus",
     difficulty: "hard"
   },
@@ -211,7 +211,7 @@ const mathQuestionsId: Question[] = [
     text: "Faktorkan ekspresi: x^2 - 9",
     options: ["(x + 3)(x - 3)", "(x + 9)(x - 9)", "(x + 3)^2", "(x - 3)^2"],
     optionsLatex: true,
-    correctAnswer: "(x + 3)(x - 3)",
+    correctAnswer: 0,
     category: "algebra",
     difficulty: "medium"
   },
@@ -224,7 +224,7 @@ const mathQuestionsId: Question[] = [
       "18 satuan kubik",
       "12 satuan kubik"
     ],
-    correctAnswer: "27 satuan kubik",
+    correctAnswer: 1,
     category: "geometry",
     difficulty: "easy"
   }
@@ -366,7 +366,7 @@ export default function QuestionsPage() {
 
     questions.forEach((question, index) => {
       const userAnswer = answers[index]
-      const isCorrect = userAnswer === question.correctAnswer
+      const isCorrect = userAnswer === question.options[question.correctAnswer]
 
       // Update category stats
       categories[question.category].total += 1
@@ -552,11 +552,9 @@ export default function QuestionsPage() {
   // Set page translations
   const pageTranslations = {
     title: lang === "en" ? "Mathematics Assessment" : "Penilaian Matematika",
-    loading: lang === "en" ? "Loading..." : "Memuat...",
+    loading: "Memuat...",
     loadingDescription:
-      lang === "en"
-        ? "Please wait while we prepare your questions"
-        : "Mohon tunggu sementara kami menyiapkan pertanyaan Anda",
+      "Mohon tunggu sementara kami menyiapkan pertanyaan Anda",
     questionCount:
       lang === "en"
         ? `Question ${currentQuestion + 1} of ${questions.length}`

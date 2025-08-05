@@ -325,7 +325,7 @@ export default function QuizResultDetailPage() {
       const data = await response.json()
       setResult(data)
     } catch (error) {
-      toast.error("Failed to load result details")
+      toast.error("Gagal memuat detail hasil")
       setError("Failed to load result details")
       console.error("Error fetching result details:", error)
     } finally {

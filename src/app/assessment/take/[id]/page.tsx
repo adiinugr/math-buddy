@@ -188,7 +188,7 @@ export default function TakeAssessmentPage() {
       return true
     } catch (err) {
       console.error("Error joining assessment:", err)
-      toast.error("Failed to join assessment. Please try again.")
+      toast.error("Gagal bergabung dengan penilaian. Silakan coba lagi.")
       return false
     } finally {
       setSubmitting(false)
@@ -202,7 +202,7 @@ export default function TakeAssessmentPage() {
     const nameToUse = session?.user?.name || name.trim()
 
     if (!nameToUse) {
-      toast.error("Please enter your name")
+      toast.error("Silakan masukkan nama Anda")
       return
     }
 
@@ -225,7 +225,7 @@ export default function TakeAssessmentPage() {
 
     // Check if all questions are answered
     if (quiz && Object.keys(answers).length !== quiz.questions.length) {
-      toast.error("Please answer all questions before submitting")
+      toast.error("Silakan jawab semua pertanyaan sebelum mengirimkan")
       return
     }
 
@@ -250,11 +250,11 @@ export default function TakeAssessmentPage() {
       }
 
       await response.json()
-      toast.success("Assessment submitted successfully!")
+      toast.success("Penilaian berhasil dikirimkan!")
       router.push(`/assessment/results?participantId=${activeParticipantId}`)
     } catch (err) {
       console.error("Error submitting assessment:", err)
-      toast.error("Failed to submit assessment. Please try again.")
+      toast.error("Gagal mengirimkan penilaian. Silakan coba lagi.")
     } finally {
       setSubmitting(false)
     }

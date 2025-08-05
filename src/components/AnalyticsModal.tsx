@@ -446,13 +446,13 @@ export const AnalyticsModal = ({
                               let performanceClass = ""
 
                               if (subPercentage >= 80) {
-                                performanceText = "Excellent"
+                                performanceText = "Sangat Baik"
                                 performanceClass = "text-green-600"
                               } else if (subPercentage >= 60) {
-                                performanceText = "Good"
+                                performanceText = "Baik"
                                 performanceClass = "text-yellow-600"
                               } else {
-                                performanceText = "Needs Improvement"
+                                performanceText = "Perlu Perbaikan"
                                 performanceClass = "text-red-600"
                               }
 
@@ -492,7 +492,7 @@ export const AnalyticsModal = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BookOpen className="h-5 w-5" />
-            Recommended Learning Resources
+            Sumber Belajar yang Direkomendasikan
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -503,8 +503,8 @@ export const AnalyticsModal = ({
             if (recommendations.length === 0) {
               return (
                 <p className="text-muted-foreground">
-                  Great job! You&apos;re doing well in all topics. Keep
-                  practicing to maintain your skills.
+                  Kerja bagus! Anda melakukan dengan baik di semua topik. Terus
+                  berlatih untuk mempertahankan keterampilan Anda.
                 </p>
               )
             }
@@ -530,18 +530,18 @@ export const AnalyticsModal = ({
                             {item.category}
                           </h3>
                           <p className="text-sm text-red-600">
-                            {item.percentage}% accuracy - Needs improvement
+                            {item.percentage}% akurasi - Perlu perbaikan
                           </p>
                         </div>
                         <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-sm">
-                          Priority {index + 1}
+                          Prioritas {index + 1}
                         </span>
                       </div>
 
                       {item.subcategories.length > 0 && (
                         <div className="mb-3">
                           <p className="text-sm font-medium mb-2">
-                            Focus areas:
+                            Area fokus:
                           </p>
                           <div className="flex flex-wrap gap-2">
                             {item.subcategories.map((subcat: string) => (

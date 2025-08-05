@@ -348,7 +348,8 @@ export default function ResultsPage() {
           `/api/quizzes/result?participantId=${participantId}`
         )
         if (!response.ok) {
-          throw new Error("Failed to fetch results")
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.error || "Failed to fetch results")
         }
 
         const data = await response.json()
@@ -356,6 +357,11 @@ export default function ResultsPage() {
         // Get student name from localStorage if available
         const studentName =
           localStorage.getItem("studentName") || "Anonymous Student"
+
+        // Validate required data
+        if (!data.id || !data.score || !data.totalQuestions) {
+          throw new Error("Invalid result data received")
+        }
 
         // Add student name to result object
         setResult({

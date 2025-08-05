@@ -31,7 +31,7 @@ export default function Breadcrumbs({
               className="inline-flex items-center text-sm text-gray-600 hover:text-blue-600"
             >
               <Home className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">Home</span>
+              <span className="hidden sm:inline">Beranda</span>
             </Link>
           </li>
         )}

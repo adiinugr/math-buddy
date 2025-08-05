@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials")
+          throw new Error("Kredensial tidak valid")
         }
 
         const user = await prisma.user.findUnique({
@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user) {
-          throw new Error("User not found")
+          throw new Error("Pengguna tidak ditemukan")
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
         )
 
         if (!isPasswordValid) {
-          throw new Error("Invalid password")
+          throw new Error("Kata sandi tidak valid")
         }
 
         return {

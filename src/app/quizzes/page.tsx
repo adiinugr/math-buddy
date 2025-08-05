@@ -48,11 +48,11 @@ export default function QuizzesPage() {
     const fetchQuizzes = async () => {
       try {
         const response = await fetch("/api/quizzes")
-        if (!response.ok) throw new Error("Failed to fetch quizzes")
+        if (!response.ok) throw new Error("Gagal mengambil kuis")
         const data = await response.json()
         setQuizzes(data)
       } catch (err) {
-        setError("Failed to load quizzes")
+        setError("Gagal memuat kuis")
         console.error(err)
       } finally {
         setLoading(false)
@@ -67,11 +67,11 @@ export default function QuizzesPage() {
       const response = await fetch(`/api/quizzes/${quizId}`, {
         method: "DELETE"
       })
-      if (!response.ok) throw new Error("Failed to delete quiz")
+      if (!response.ok) throw new Error("Gagal menghapus kuis")
       setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId))
       setQuizToDelete(null)
     } catch (err) {
-      setError("Failed to delete quiz")
+      setError("Gagal menghapus kuis")
       console.error(err)
     }
   }
@@ -228,7 +228,7 @@ export default function QuizzesPage() {
                         className="flex items-center gap-1 text-xs h-9 bg-white/50"
                       >
                         <Edit className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Edit</span>
+                        <span className="hidden sm:inline">Ubah</span>
                       </Button>
                       <Button
                         onClick={() =>

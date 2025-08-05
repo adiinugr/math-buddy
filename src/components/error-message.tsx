@@ -19,7 +19,7 @@ export default function ErrorMessage({
   message,
   retryAction,
   backAction,
-  backLabel = "Go Back"
+  backLabel = "Kembali"
 }: ErrorMessageProps) {
   const [isRetrying, setIsRetrying] = useState(false)
 
@@ -55,22 +55,22 @@ export default function ErrorMessage({
   const getTitle = () => {
     switch (type) {
       case "connection":
-        return "Connection Error"
+        return "Kesalahan Koneksi"
       case "server":
-        return "Server Error"
+        return "Kesalahan Server"
       default:
-        return "Error"
+        return "Kesalahan"
     }
   }
 
   const getHelpText = () => {
     switch (type) {
       case "connection":
-        return "Please check your internet connection and try again."
+        return "Silakan periksa koneksi internet Anda dan coba lagi."
       case "server":
-        return "Our server is experiencing issues. Please try again later."
+        return "Server kami mengalami masalah. Silakan coba lagi nanti."
       default:
-        return "Something went wrong. Please try again."
+        return "Terjadi kesalahan. Silakan coba lagi."
     }
   }
 
@@ -96,10 +96,10 @@ export default function ErrorMessage({
             {isRetrying ? (
               <>
                 <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                Retrying...
+                Mencoba lagi...
               </>
             ) : (
-              <>Retry</>
+              <>Coba Lagi</>
             )}
           </Button>
         )}

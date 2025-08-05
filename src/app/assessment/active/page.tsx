@@ -112,7 +112,7 @@ export default function ActiveAssessments() {
       )
     } catch (error) {
       console.error("Error joining assessment:", error)
-      toast.error("Failed to join assessment. Please try again.")
+      toast.error("Gagal bergabung dengan penilaian. Silakan coba lagi.")
       // Fall back to regular navigation
       router.push(`/assessment/take/${assessmentCode}`)
     } finally {
