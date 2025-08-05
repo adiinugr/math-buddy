@@ -223,6 +223,7 @@ export default function Home() {
               Sudah punya kode kuis?
             </h2>
             <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 max-w-md">
+              {/* TODO: Add a link to the join page */}
               Masukkan kode kuis Anda untuk langsung bergabung dengan penilaian.
               Tidak perlu akun!
             </p>
