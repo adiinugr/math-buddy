@@ -69,6 +69,7 @@ export default function StudentGroupsPage() {
   const [groupSize, setGroupSize] = useState(4)
   const [category, setCategory] = useState("overall")
   const [refreshing, setRefreshing] = useState(false)
+  const [autoUpdating, setAutoUpdating] = useState(false)
   const [availableCategories, setAvailableCategories] = useState<string[]>([])
 
   const fetchQuiz = useCallback(async () => {
@@ -84,54 +85,152 @@ export default function StudentGroupsPage() {
     }
   }, [params.id])
 
-  const generateGroups = useCallback(async () => {
-    setRefreshing(true)
-    try {
-      const response = await fetch(
-        `/api/quizzes/${params.id}/groups?groupSize=${groupSize}&category=${category}`
-      )
-      if (!response.ok) {
-        throw new Error("Failed to generate groups")
-      }
-      const data = await response.json()
-      setGroups(data.groups)
-
-      // Set error message if provided by the API
-      if (data.error) {
-        setError(data.error)
-      } else {
-        setError("")
-      }
-
-      // Extract available categories from the first participant
-      if (data.groups.length > 0 && data.groups[0].length > 0) {
-        const firstParticipant = data.groups[0][0]
-        if (firstParticipant.categories) {
-          setAvailableCategories([
-            "overall",
-            ...Object.keys(firstParticipant.categories)
-          ])
-        }
-      }
-    } catch (error) {
-      toast.error("Gagal menghasilkan grup siswa")
-      setError("Failed to generate student groups")
-      console.error("Error generating groups:", error)
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }, [params.id, groupSize, category])
-
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/auth/login")
       return
     }
 
-    fetchQuiz()
-    generateGroups()
-  }, [status, router, fetchQuiz, generateGroups])
+    if (status === "authenticated") {
+      fetchQuiz()
+      // Only generate groups on initial load, not when parameters change
+      const initialGenerateGroups = async () => {
+        setRefreshing(true)
+        setError("")
+        try {
+          console.log(
+            `Initial group generation with size: ${groupSize}, category: ${category}`
+          )
+
+          const response = await fetch(
+            `/api/quizzes/${params.id}/groups?groupSize=${groupSize}&category=${category}`
+          )
+
+          console.log(`Response status: ${response.status}`)
+
+          if (!response.ok) {
+            const errorText = await response.text()
+            console.error("API Error:", errorText)
+            throw new Error(`Failed to generate groups: ${response.status}`)
+          }
+
+          const data = await response.json()
+          console.log("API Response:", data)
+
+          setGroups(data.groups || [])
+
+          // Set error message if provided by the API
+          if (data.error) {
+            setError(data.error)
+            toast.error(data.error)
+          } else {
+            setError("")
+          }
+
+          // Extract available categories from the first participant
+          if (
+            data.groups &&
+            data.groups.length > 0 &&
+            data.groups[0].length > 0
+          ) {
+            const firstParticipant = data.groups[0][0]
+            if (firstParticipant.categories) {
+              setAvailableCategories([
+                "overall",
+                ...Object.keys(firstParticipant.categories)
+              ])
+            }
+          }
+        } catch (error) {
+          toast.error("Gagal menghasilkan grup siswa")
+          setError("Failed to generate student groups")
+          console.error("Error generating groups:", error)
+        } finally {
+          setLoading(false)
+          setRefreshing(false)
+        }
+      }
+
+      initialGenerateGroups()
+    }
+  }, [status, router, fetchQuiz, params.id])
+
+  // Monitor groups state changes
+  useEffect(() => {
+    console.log("Groups state changed:", groups)
+  }, [groups])
+
+  // Auto-regenerate groups when groupSize or category changes with debouncing
+  useEffect(() => {
+    if (status === "authenticated" && !loading) {
+      console.log(
+        `Auto-regenerating groups due to parameter change: groupSize=${groupSize}, category=${category}`
+      )
+
+      // Debounce the API call to avoid too many requests
+      const timeoutId = setTimeout(() => {
+        // Auto-regenerate without showing loading state
+        const autoRegenerateGroups = async () => {
+          setAutoUpdating(true)
+          setError("")
+          try {
+            console.log(
+              `Auto-regenerating groups with size: ${groupSize}, category: ${category}`
+            )
+
+            const response = await fetch(
+              `/api/quizzes/${params.id}/groups?groupSize=${groupSize}&category=${category}`
+            )
+
+            console.log(`Response status: ${response.status}`)
+
+            if (!response.ok) {
+              const errorText = await response.text()
+              console.error("API Error:", errorText)
+              throw new Error(`Failed to generate groups: ${response.status}`)
+            }
+
+            const data = await response.json()
+            console.log("Auto-regenerate API Response:", data)
+            console.log("Setting groups:", data.groups)
+
+            setGroups(data.groups || [])
+
+            // Set error message if provided by the API
+            if (data.error) {
+              setError(data.error)
+            } else {
+              setError("")
+            }
+
+            // Extract available categories from the first participant
+            if (
+              data.groups &&
+              data.groups.length > 0 &&
+              data.groups[0].length > 0
+            ) {
+              const firstParticipant = data.groups[0][0]
+              if (firstParticipant.categories) {
+                setAvailableCategories([
+                  "overall",
+                  ...Object.keys(firstParticipant.categories)
+                ])
+              }
+            }
+          } catch (error) {
+            setError("Failed to auto-regenerate student groups")
+            console.error("Error auto-regenerating groups:", error)
+          } finally {
+            setAutoUpdating(false)
+          }
+        }
+
+        autoRegenerateGroups()
+      }, 500) // 500ms debounce
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [groupSize, category, status, loading, params.id])
 
   const decreaseGroupSize = () => {
     if (groupSize > 2) {
@@ -149,8 +248,62 @@ export default function StudentGroupsPage() {
     setCategory(value)
   }
 
-  const handleRegenerateGroups = () => {
-    generateGroups()
+  const handleRegenerateGroups = async () => {
+    console.log("Generate Groups button clicked!")
+    setRefreshing(true)
+    setError("")
+    try {
+      console.log(
+        `Manual regenerating groups with size: ${groupSize}, category: ${category}`
+      )
+
+      // Add a random parameter to force different grouping
+      const randomSeed = Math.random()
+      const response = await fetch(
+        `/api/quizzes/${params.id}/groups?groupSize=${groupSize}&category=${category}&forceRegenerate=${randomSeed}`
+      )
+
+      console.log(`Response status: ${response.status}`)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error("API Error:", errorText)
+        throw new Error(`Failed to generate groups: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log("Manual regenerate API Response:", data)
+      console.log("Setting groups:", data.groups)
+
+      setGroups(data.groups || [])
+
+      // Set error message if provided by the API
+      if (data.error) {
+        setError(data.error)
+        toast.error(data.error)
+      } else {
+        setError("")
+        toast.success("Grup berhasil diperbarui dengan pengelompokan baru")
+      }
+
+      // Extract available categories from the first participant
+      if (data.groups && data.groups.length > 0 && data.groups[0].length > 0) {
+        const firstParticipant = data.groups[0][0]
+        if (firstParticipant.categories) {
+          setAvailableCategories([
+            "overall",
+            ...Object.keys(firstParticipant.categories)
+          ])
+        }
+      }
+    } catch (error) {
+      toast.error("Gagal menghasilkan grup siswa")
+      setError("Failed to generate student groups")
+      console.error("Error generating groups:", error)
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
   }
 
   const downloadGroupsCSV = () => {
@@ -311,6 +464,13 @@ export default function StudentGroupsPage() {
                 Generate Groups
               </Button>
             </div>
+            {error && <div className="text-sm text-red-600 mt-2">{error}</div>}
+            {autoUpdating && (
+              <div className="text-sm text-blue-600 mt-2 flex items-center gap-2">
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                Memperbarui grup secara otomatis...
+              </div>
+            )}
           </CardContent>
         </Card>
 

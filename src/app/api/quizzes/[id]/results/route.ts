@@ -17,30 +17,143 @@ interface Question {
 
 // Category mapping for consistent categorization
 const CATEGORY_MAPPINGS: Record<string, string[]> = {
-  aljabar: ["persamaan", "pertidaksamaan", "polinomial", "fungsi", "ekspresi"],
-  geometri: ["bentuk", "sudut", "luas", "volume", "segitiga", "lingkaran"],
-  aritmatika: ["operasi", "pecahan", "desimal", "persentase", "bilangan bulat"],
-  kalkulus: ["turunan", "integral", "limit", "aplikasi", "diferensiasi"],
-  trigonometri: ["fungsi", "identitas", "persamaan", "aplikasi", "sudut"],
-  statistik: ["probabilitas", "data", "distribusi", "inferensi", "regresi"]
+  aljabar: [
+    "persamaan",
+    "pertidaksamaan",
+    "polinomial",
+    "fungsi",
+    "ekspresi",
+    "persamaan_linear",
+    "persamaan_kuadrat",
+    "fungsi_linear",
+    "fungsi_kuadrat",
+    "sistem_persamaan",
+    "faktorisasi",
+    "aljabar"
+  ],
+  geometri: [
+    "bentuk",
+    "sudut",
+    "luas",
+    "volume",
+    "segitiga",
+    "lingkaran",
+    "poligon",
+    "koordinat",
+    "transformasi",
+    "geometri_koordinat",
+    "teorema_pythagoras",
+    "geometri"
+  ],
+  aritmatika: [
+    "operasi",
+    "pecahan",
+    "desimal",
+    "persentase",
+    "bilangan_bulat",
+    "bilangan_rasional",
+    "bilangan_irrasional",
+    "aritmatika"
+  ],
+  kalkulus: [
+    "turunan",
+    "integral",
+    "limit",
+    "aplikasi",
+    "diferensiasi",
+    "deret",
+    "konvergensi",
+    "divergensi",
+    "kalkulus"
+  ],
+  trigonometri: [
+    "fungsi",
+    "identitas",
+    "persamaan",
+    "aplikasi",
+    "sudut",
+    "fungsi_trigonometri",
+    "persamaan_trigonometri",
+    "trigonometri"
+  ],
+  statistik: [
+    "probabilitas",
+    "data",
+    "distribusi",
+    "inferensi",
+    "regresi",
+    "analisis_data",
+    "hipotesis",
+    "statistik"
+  ]
 }
 
 // Determine category from subcategory using consistent mapping
 function determineCategoryFromSubcategory(subcategory: string): string {
-  if (!subcategory) return "uncategorized"
+  if (
+    !subcategory ||
+    subcategory === "undefined" ||
+    subcategory === "general"
+  ) {
+    return "umum"
+  }
+
+  const normalizedSubcategory = subcategory.toLowerCase().replace(/[_-]/g, " ")
 
   // Look through our mappings for a match
   for (const [category, subcategories] of Object.entries(CATEGORY_MAPPINGS)) {
     if (
-      subcategories.some((sub) =>
-        subcategory.toLowerCase().includes(sub.toLowerCase())
-      )
+      subcategories.some((sub) => {
+        const normalizedSub = sub.toLowerCase().replace(/[_-]/g, " ")
+        return (
+          normalizedSubcategory.includes(normalizedSub) ||
+          normalizedSub.includes(normalizedSubcategory)
+        )
+      })
     ) {
       return category
     }
   }
 
-  return "uncategorized"
+  // Additional fallback logic for common patterns
+  if (
+    normalizedSubcategory.includes("persamaan") ||
+    normalizedSubcategory.includes("equation")
+  ) {
+    return "aljabar"
+  }
+  if (
+    normalizedSubcategory.includes("fungsi") ||
+    normalizedSubcategory.includes("function")
+  ) {
+    return "aljabar"
+  }
+  if (
+    normalizedSubcategory.includes("segitiga") ||
+    normalizedSubcategory.includes("triangle")
+  ) {
+    return "geometri"
+  }
+  if (
+    normalizedSubcategory.includes("lingkaran") ||
+    normalizedSubcategory.includes("circle")
+  ) {
+    return "geometri"
+  }
+  if (
+    normalizedSubcategory.includes("pecahan") ||
+    normalizedSubcategory.includes("fraction")
+  ) {
+    return "aritmatika"
+  }
+  if (
+    normalizedSubcategory.includes("bilangan") ||
+    normalizedSubcategory.includes("number")
+  ) {
+    return "aritmatika"
+  }
+
+  return "umum"
 }
 
 export async function GET(
@@ -101,11 +214,11 @@ export async function GET(
       // Process each question to build category stats
       participant.quiz.questions.forEach((question) => {
         // More robust category determination logic
-        let category = (question as Question).category || "uncategorized"
+        let category = (question as Question).category || "umum"
         const subcategory = (question as Question).subcategory || "general"
 
         // If no category is provided but subcategory exists, derive category from subcategory
-        if (category === "uncategorized" && subcategory !== "general") {
+        if (category === "uncategorized" || category === "umum") {
           category = determineCategoryFromSubcategory(subcategory)
         }
 
@@ -146,7 +259,7 @@ export async function GET(
       const questionsWithCategory = participant.quiz.questions.map(
         (question) => ({
           ...question,
-          category: questionCategories[question.id] || "uncategorized",
+          category: questionCategories[question.id] || "umum",
           subcategory: (question as Question).subcategory || "general"
         })
       )

@@ -19,6 +19,7 @@ interface DetailedParticipant extends Participant {
 
 /**
  * Create heterogeneous groups of students based on their assessment results
+ * This algorithm ensures balanced groups with mixed skill levels
  * @param participants List of participants with their scores
  * @param groupSize Target size for each group
  * @returns Array of groups, where each group is an array of participants
@@ -42,14 +43,26 @@ export function createHeterogeneousGroups(
     () => []
   )
 
-  // Distribute participants to ensure heterogeneous skill levels in each group
+  // Use simple round-robin distribution for reliable grouping
+  // This ensures each group gets students in a predictable pattern
   for (let i = 0; i < sortedParticipants.length; i++) {
-    // Calculate the group index using a zigzag pattern
     const groupIndex = i % numGroups
     groups[groupIndex].push(sortedParticipants[i])
   }
 
-  return groups
+  // Log the distribution for debugging
+  console.log(
+    `Heterogeneous grouping: ${participants.length} participants, ${numGroups} groups, target size: ${groupSize}`
+  )
+  groups.forEach((group, index) => {
+    console.log(`Group ${index + 1}: ${group.length} students`)
+  })
+
+  // Validate and clean up empty groups
+  const validGroups = groups.filter((group) => group.length > 0)
+  console.log(`Final result: ${validGroups.length} non-empty groups`)
+
+  return validGroups
 }
 
 /**
@@ -95,12 +108,23 @@ export function createCategoryBasedGroups(
     () => []
   )
 
-  // Distribute participants to ensure heterogeneous skill levels in each group
+  // Use the same simple round-robin distribution for category-based grouping
   for (let i = 0; i < sortedParticipants.length; i++) {
-    // Calculate the group index using a zigzag pattern to ensure distribution
     const groupIndex = i % numGroups
     groups[groupIndex].push(sortedParticipants[i])
   }
 
-  return groups
+  // Log the distribution for debugging
+  console.log(
+    `Category-based grouping: ${participants.length} participants, ${numGroups} groups, target size: ${groupSize}, category: ${categoryKey}`
+  )
+  groups.forEach((group, index) => {
+    console.log(`Group ${index + 1}: ${group.length} students`)
+  })
+
+  // Validate and clean up empty groups
+  const validGroups = groups.filter((group) => group.length > 0)
+  console.log(`Final result: ${validGroups.length} non-empty groups`)
+
+  return validGroups
 }

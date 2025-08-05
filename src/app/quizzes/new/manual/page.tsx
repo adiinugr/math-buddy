@@ -13,6 +13,8 @@ interface Question {
   text: string
   options: string[]
   correctAnswer: number
+  category: string
+  subcategory: string
 }
 
 export default function ManualQuizPage() {
@@ -24,7 +26,14 @@ export default function ManualQuizPage() {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [questions, setQuestions] = useState<Question[]>([
-    { id: "1", text: "", options: ["", "", "", ""], correctAnswer: 0 }
+    {
+      id: "1",
+      text: "",
+      options: ["", "", "", ""],
+      correctAnswer: 0,
+      category: "umum",
+      subcategory: "general"
+    }
   ])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -53,7 +62,9 @@ export default function ManualQuizPage() {
         id: (questions.length + 1).toString(),
         text: "",
         options: ["", "", "", ""],
-        correctAnswer: 0
+        correctAnswer: 0,
+        category: "umum",
+        subcategory: "general"
       }
     ])
   }
@@ -89,6 +100,16 @@ export default function ManualQuizPage() {
 
     if (questions.some((q) => q.options.some((o) => !o.trim()))) {
       toast.error("Silakan isi semua pilihan jawaban")
+      return
+    }
+
+    if (questions.some((q) => !q.category || q.category === "uncategorized")) {
+      toast.error("Silakan pilih kategori untuk semua soal")
+      return
+    }
+
+    if (questions.some((q) => !q.subcategory || q.subcategory === "general")) {
+      toast.error("Silakan isi subkategori untuk semua soal")
       return
     }
 
@@ -228,6 +249,52 @@ export default function ManualQuizPage() {
                           placeholder="Masukkan teks soal dengan persamaan LaTeX (contoh: Selesaikan untuk x: $2x^2 + 5x - 3 = 0$)"
                           className="border border-gray-400 rounded-md"
                         />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Kategori
+                          </label>
+                          <select
+                            value={question.category}
+                            onChange={(e) =>
+                              updateQuestion(
+                                question.id,
+                                "category",
+                                e.target.value
+                              )
+                            }
+                            className="w-full border border-gray-400 rounded-md px-3 py-2"
+                          >
+                            <option value="aljabar">Aljabar</option>
+                            <option value="geometri">Geometri</option>
+                            <option value="aritmatika">Aritmatika</option>
+                            <option value="kalkulus">Kalkulus</option>
+                            <option value="trigonometri">Trigonometri</option>
+                            <option value="statistik">Statistik</option>
+                            <option value="umum">Umum</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Subkategori
+                          </label>
+                          <input
+                            type="text"
+                            value={question.subcategory}
+                            onChange={(e) =>
+                              updateQuestion(
+                                question.id,
+                                "subcategory",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Contoh: persamaan linear, segitiga, dll"
+                            className="w-full border border-gray-400 rounded-md px-3 py-2"
+                          />
+                        </div>
                       </div>
 
                       <div className="space-y-2">

@@ -55,8 +55,11 @@ export async function POST(req: Request) {
             text: q.text,
             options: q.options,
             correctAnswer: q.correctAnswer,
-            category: q.category || "uncategorized",
-            subcategory: q.subcategory,
+            category:
+              q.category && q.category !== "uncategorized"
+                ? q.category
+                : "umum",
+            subcategory: q.subcategory || "general",
             order: index + 1
           }))
         }

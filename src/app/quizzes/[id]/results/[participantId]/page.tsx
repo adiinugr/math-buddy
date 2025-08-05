@@ -163,8 +163,10 @@ function StudentStyleLearningPath({
                   <div className="bg-indigo-100/80 px-4 py-3">
                     <h3 className="font-medium text-indigo-900 capitalize flex items-center justify-between">
                       {topic.subcategory
-                        ? `${topic.category}: ${topic.subcategory}`
-                        : topic.category}
+                        ? `${getCategoryDisplayName(topic.category)}: ${
+                            topic.subcategory
+                          }`
+                        : getCategoryDisplayName(topic.category)}
                       <span className="text-sm px-2 py-1 bg-white rounded-full">
                         {topic.percentage}% penguasaan
                       </span>
@@ -210,6 +212,24 @@ function StudentStyleLearningPath({
 // Reuse the learning resources function from assessment results
 const getLearningResources = (subcategory: string): LearningResource[] => {
   const resources: Record<string, LearningResource[]> = {
+    umum: [
+      {
+        title: "Ruang Guru - Matematika Umum",
+        url: "https://www.ruangguru.com/blog/matematika",
+        description: "Materi matematika umum untuk semua tingkat."
+      },
+      {
+        title: "Zenius - Matematika",
+        url: "https://www.zenius.net/blog/matematika",
+        description: "Video pembelajaran matematika dengan contoh soal."
+      },
+      {
+        title: "Khan Academy - Mathematics",
+        url: "https://www.khanacademy.org/math",
+        description:
+          "Complete mathematics course covering all essential topics."
+      }
+    ],
     equations: [
       {
         title: "Ruang Guru - Persamaan Linear",
@@ -274,8 +294,13 @@ const getLearningResources = (subcategory: string): LearningResource[] => {
   }
 
   // Handle undefined subcategory
-  if (!subcategory || subcategory === "undefined") {
-    return resources.algebra || []
+  if (
+    !subcategory ||
+    subcategory === "undefined" ||
+    subcategory === "umum" ||
+    subcategory === "general"
+  ) {
+    return resources.umum || []
   }
 
   // Try exact match first
@@ -289,7 +314,21 @@ const getLearningResources = (subcategory: string): LearningResource[] => {
       key.includes(subcategory.toLowerCase())
   )
 
-  return partialMatch ? partialMatch[1] : resources.algebra
+  return partialMatch ? partialMatch[1] : resources.umum
+}
+
+// Helper function to get category display name
+const getCategoryDisplayName = (category: string): string => {
+  const categoryNames: Record<string, string> = {
+    aljabar: "Aljabar",
+    geometri: "Geometri",
+    aritmatika: "Aritmatika",
+    kalkulus: "Kalkulus",
+    trigonometri: "Trigonometri",
+    statistik: "Statistik",
+    umum: "Umum"
+  }
+  return categoryNames[category] || category
 }
 
 export default function QuizResultDetailPage() {
@@ -519,7 +558,7 @@ export default function QuizResultDetailPage() {
                 <p className="text-sm text-green-700 font-medium">Kategori</p>
                 <div className="flex justify-between items-center">
                   <p className="text-base text-green-800 capitalize">
-                    {strongestCategory.category}
+                    {getCategoryDisplayName(strongestCategory.category)}
                   </p>
                   <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
                     {strongestCategory.percentage}%
@@ -559,7 +598,7 @@ export default function QuizResultDetailPage() {
                   <p className="text-sm text-amber-700 font-medium">Kategori</p>
                   <div className="flex justify-between items-center">
                     <p className="text-base text-amber-800 capitalize">
-                      {weakestCategory.category}
+                      {getCategoryDisplayName(weakestCategory.category)}
                     </p>
                     <span className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
                       {weakestCategory.percentage}%
@@ -624,7 +663,10 @@ export default function QuizResultDetailPage() {
                       <div>
                         <h3 className="font-medium">Soal {index + 1}</h3>
                         <p className="text-sm text-muted-foreground capitalize">
-                          {question.subcategory || question.category || "umum"}
+                          {question.subcategory &&
+                          question.subcategory !== "general"
+                            ? question.subcategory
+                            : getCategoryDisplayName(question.category)}
                         </p>
                       </div>
                       <span

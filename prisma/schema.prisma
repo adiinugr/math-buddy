@@ -45,7 +45,7 @@ model Question {
   text          String
   options       String[] // Stored as JSON array
   correctAnswer Int // Index of correct answer
-  category      String       @default("uncategorized") // Main category of the question
+  category      String       @default("umum") // Main category of the question
   subcategory   String? // The subcategory of the question
   quizId        String
   quiz          Quiz         @relation(fields: [quizId], references: [id])
